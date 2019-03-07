@@ -1,0 +1,15 @@
+{
+    "env": {
+        "browser": true
+    },
+    "extends": "airbnb-base",
+    "rules": {
+        "linebreak-style": 0,
+        "webgl-logic/noAsyncAwait": 2,
+        "webgl-logic/noMathRandom": 2
+    },
+    "plugins": [
+        "webgl-logic"
+    ],
+    "parser": "babel-eslint"
+}

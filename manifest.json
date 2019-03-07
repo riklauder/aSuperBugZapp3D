@@ -1,0 +1,15 @@
+{
+  "short_name": "BugsApp3D",
+  "name": "BugsApp3D",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "type": "image/png",
+      "sizes": "16x16"
+    }
+  ],
+  "start_url": "index.html",
+  "background_color": "#3367D6",
+  "display": "standalone",
+  "theme_color": "#3367D6"
+}
