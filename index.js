@@ -332,7 +332,7 @@ function handleMouseDown(event) {
     audio.play();
     clx = event.clientX - (c.width / 2);
     cly = (c.height - event.clientY) - (c.height / 2);
-    vv = (Math.sqrt(clx * clx) + Math.sqrt(cly * cly));
+    vv = (Math.sqrt((clx * clx) + (cly * cly)));
     clicked = [clx / vv, cly / vv];
     console.log("clicked:" + clicked);
     findClickedBug(clicked);
