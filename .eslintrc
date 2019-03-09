@@ -1,15 +1,16 @@
 {
     "env": {
-        "browser": true
-    },
-    "extends": "airbnb-base",
-    "rules": {
-        "linebreak-style": 0,
-        "webgl-logic/noAsyncAwait": 2,
-        "webgl-logic/noMathRandom": 2
-    },
+        "browser": true,
+        "es6": true
+      },
     "plugins": [
-        "webgl-logic"
+        "eslint-plugin-html"
     ],
-    "parser": "babel-eslint"
+    "extends": "eslint:recommended",
+    "parserOptions": {
+        "sourceType": "script"
+      },
+    "rules": {
+        "strict": [2, "global"]
+    }
 }
