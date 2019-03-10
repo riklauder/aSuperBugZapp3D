@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "outDir": "./built",
+        "allowJs": true,
+        "target": "es6"
+    },
+    "include": [
+      "./",
+      "node_modules/twgl.js/dist/4.x",
+      "js",
+      "tdl",
+      "common",
+      "3rdparty"
+    ]
+}
