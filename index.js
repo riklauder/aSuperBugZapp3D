@@ -46,7 +46,7 @@ var poisonIncrementer = [];
 var projectionMatrix;
 var radiusOfCircle = 0.4;
 var then = 0.0;
-var twgl;
+//var twgl;
 var vertices = [];
 var vv;
 var WorldMatrix;
@@ -297,7 +297,7 @@ function render(time) {
     });
 
     twgl.drawObjectList(gl, drawObjects);
-    requestAnimationFrame(render, c);
+    requestAnimationFrame(render);
 }
 requestAnimationFrame(render);
 
