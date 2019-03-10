@@ -1,17 +1,18 @@
-/* eslint-disable strict */
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-undef */
-/* eslint-disable nonblock-statement-body-position */
-// Handles the mouse down event and stores the coordinates of the user
-// Also calculates the distance from the center of the circle
+/*eslint-disable no-undef*/
+/*eslint no-unused-vars: ["error", { "vars": "local" }]*/
+/*global some_unused_var*/
+/*eslint-disable nonblock-statement-body-position*/
+"use strict";
+
 tdl.require('tdl.fps');
 tdl.require('tdl.fast');
+tdl.require('tdl.primitives');
+    
 if (!window.Float32Array) {
-    // This just makes some errors go away when there is no WebGL.
+    // This makes errors go away when there is no WebGL.
     window.Float32Array = function() {};
 }
 
-var at;
 var bugClickedOn = [];
 var bugColors = []; // colors for bugs
 var bugs = []; // array of bugs verts only
@@ -19,7 +20,7 @@ var bugsArray = []; //local variable to store all bug data
 var btime = 0;
 var bugSize = 0.2;
 var bugSpeed = 5; // interval at which bugs appear
-var bugMaxVertices = 10; //max number of bugs
+var bugMaxGroups = 10; //max number of bugs
 
 var clock = 0.0;
 var clx, cly;
@@ -78,6 +79,7 @@ WebGLDebugUtils.init(ctx);
 /* Helps setup parent child scene relationships*/
 /*var Node = function() {
       this.children = [];
+
       this.localMatrix = m4.identity();
       this.worldMatrix = m4.identity();
     };
@@ -194,7 +196,7 @@ for (let ii = 0; ii < numObjects; ++ii) {
 
 var createFlattenedVertices = function(gl, vertices) {
     var last;
-    return webglUtils.createBufferInfoFromArrays(
+    return WebGLUtils.createBufferInfoFromArrays(
         gl,
         primitives.makeRandomVertexColors(
             primitives.deindexVertices(vertices), {
@@ -282,7 +284,7 @@ function render(time) {
     m4.lookAt(eye, target, up, camera);
     m4.inverse(camera, view);
     m4.multiply(projection, view, viewProjection);
-    var i = btime / 10;
+
     objects.forEach(function(obj) {
         const uni = obj.uniforms;
         const world = uni.u_world;
