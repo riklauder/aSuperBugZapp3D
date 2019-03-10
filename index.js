@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable strict */
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
@@ -17,7 +18,7 @@ var bugColors = []; // colors for bugs
 var bugs = []; // array of bugs verts only
 var bugsArray = []; //local variable to store all bug data
 var btime = 0;
-var bugSize = 0.3;
+var bugSize = 0.2;
 var bugSpeed = 5; // interval at which bugs appear
 var bugMaxVertices = 10; //max number of bugs
 
@@ -26,12 +27,14 @@ var clx, cly;
 var clicked;
 var colors;
 var currBugs = 0;
+var debug = true;
 var eye;
 var eyeClock = 0;
 var frameCount = 0;
 var g_fpsTimer;
 var gamePoints = 0;
 var incrementer = 0;
+var index = 0;
 var localMatrix;
 var modelViewMatrix;
 var noOfBugPoints = 1600;
@@ -50,7 +53,7 @@ var WorldMatrix;
 
 /*BOILERPLATE SETUP*/
 /*WEBGL INIT TASKS CONTINUES AFTER SHADERS DEINED
-create shaders, create vertexes, upload to buffers, 
+create shaders, create vertexes, upload to buffers
 create textures and upload to buffers*/
 twgl.setDefaults({ attribPrefix: "a_" });
 const m4 = twgl.m4;
@@ -58,9 +61,8 @@ const gl = document.querySelector("#c").getContext("webgl");
 const programInfo = twgl.createProgramInfo(gl, ["vs", "fs"]);
 g_fpsTimer = new tdl.fps.FPSTimer();
 const shapes = [
-    //templates for gameWorld object shaps
-    //sphere
-    twgl.primitives.createSphereBufferInfo(gl, 5, 48, 24),
+    //game sphere
+    twgl.primitives.createSphereBufferInfo(gl, 4.6, 48, 24),
     //game-bug
     twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 5),
     twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 5),
@@ -69,7 +71,7 @@ const shapes = [
     twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 5),
     twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 5),
     twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 5),
-];
+  ];
 
 var ctx = WebGLDebugUtils.makeDebugContext(c.getContext("webgl"));
 WebGLDebugUtils.init(ctx);
@@ -105,7 +107,6 @@ WebGLDebugUtils.init(ctx);
         // no matrix was passed in so just copy localMatrix to worldMatrix
         m4.copy(this.localMatrix, this.worldMatrix);
       }
-    
       // now process all the children
       var worldMatrix = this.worldMatrix;
       this.children.forEach(function(child) {
@@ -162,7 +163,7 @@ for (let ii = 0; ii < numObjects; ++ii) {
         bufferInfo: shapes[ii % shapes.length],
         uniforms: uniforms,
     });
-    if (ii == 0) {
+    if (ii === 0) {
         objects.push({
             //translation: [rand(-10, 10), rand(-10, 10), rand(-10, 10)],
             translation: [0.0, 0.0, 0.0],
@@ -175,7 +176,7 @@ for (let ii = 0; ii < numObjects; ++ii) {
         //add bugs to object for render
         objects.push({
             //translation: [rand(-10, 10), rand(-10, 10), rand(-10, 10)],
-            translation: [rand(-1, 1), rand(-1, 1), -5],
+            translation: [rand(-1, 1), rand(-1, 1), -4.6],
             ySpeed: rand(0.1, 0.2),
             zSpeed: rand(0.2, 0.4),
             uniforms: uniforms,
@@ -217,7 +218,7 @@ var sphereNode = new Node();
   sphereNode.localMatrix = m4.translation(0, 0, 0);//it's already at centre of world
   sphereNode.drawInfo = {
     uniforms: {
-      u_colorOffset: [0.6, 0.6, 0, 1], // 
+      u_colorOffset: [0.6, 0.6, 0, 1], //
       u_colorMult:   [0.5, 0.5, 0, 1],
     },
     programInfo: programInfo,
@@ -244,19 +245,20 @@ objects = [
   ];
 */
 
-/*RENDER TIME - 3of3 -ear and set the viewport and other global state 
+
+/*RENDER TIME - 3of3 -ear and set the viewport and other global state
  --call gl.useProgram, setup uniforms, gl.drawArrays, gl.drawElemetns
   */
 function render(time) {
     time *= 0.001;
     c.onmousedown = handleMouseDown;
     ++frameCount;
-    if (frameCount % 60 == 0)
+    if (frameCount % 60 === 0)
         btime += 1;
     bugSize = (btime / 10) + 0.5;
     var now = (new Date()).getTime() * 0.001;
     var elapsedTime;
-    if (then == 0.0) {
+    if (then === 0.0) {
         elapsedTime = 0.0;
     } else {
         elapsedTime = now - then;
@@ -295,8 +297,7 @@ function render(time) {
     });
 
     twgl.drawObjectList(gl, drawObjects);
-
-    requestAnimationFrame(render);
+    requestAnimationFrame(render, c);
 }
 requestAnimationFrame(render);
 
@@ -316,7 +317,8 @@ function findClickedBug(clicked) {
         if (clicked[0] >= bugxl && clicked[0] <= bugxh) {
             if (clicked[1] >= bugyl && clicked[0] <= bugyh) {
                 bugsArray[i].alive = false;
-                console.log("bug kileed at vector: [" + bugx + ", " + bugy + "]");
+                if (debug === true)
+                  console.log("bug kileed at vector: [" + bugx + ", " + bugy + "]");
                 return true;
             }
         }
@@ -330,10 +332,13 @@ a vector using float values for webgl*/
 function handleMouseDown(event) {
     let audio = new Audio('common/music/click.mp3');
     audio.play();
-    clx = event.clientX - (c.width / 2);
-    cly = (c.height - event.clientY) - (c.height / 2);
-    vv = (Math.sqrt((clx * clx) + (cly * cly)));
-    clicked = [clx / vv, cly / vv];
-    console.log("clicked:" + clicked);
+    clx = -1 + 2*event.clientX/c.width;
+    cly = -1 + 2*(c.height-event.clientY)/c.height;
+    //vv = (Math.sqrt((clx * clx) + (cly * cly)));
+    clicked = [clx , cly];
+    if (debug === true){
+      console.log("client:" + event.clientX + ", " + event.clientY);
+      console.log("clicked:" + clicked);
+    }
     findClickedBug(clicked);
 }

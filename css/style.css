@@ -66,7 +66,38 @@ CANVAS, canvas, c {
     padding: 10px;
   }
   .fpsInner {
-    clear: both;
+    clear: both;    
+  }
+  #gameData{
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    z-index: 2;
+    color: white;
+    background-color: rgba(0,0,0,0.5);
+    border-radius: 10px;
+    padding: 10px;
+  }
+  .gameInner {
+    clear: both;    
+  }
+  .game{
+    flex: left;
+  }
+  .gamescore{
+    float: left;
+  }
+  .bugsdead{
+    float: left;
+  }
+  .bugsgroup{
+    float: left;
+  }
+  .bugstotal{
+    float: left;
+  }
+  .status{
+    float: left;
   }
   .clickable {
     cursor: pointer;
@@ -295,7 +326,7 @@ h1 {
     font-size: 14px;
 }
 
-.count, .fps {
+.count, .fps, .game {
     font-weight: bold;
 }
 
