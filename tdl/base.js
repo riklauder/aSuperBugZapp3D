@@ -1,3 +1,4 @@
+/* eslint-disable strict */
 /*
  * Copyright 2009, Google Inc.
  * All rights reserved.

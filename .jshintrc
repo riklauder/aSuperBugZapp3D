@@ -1,0 +1,28 @@
+{
+    "bitwise": false,
+    "strict": false,
+    "globalstrict": true,
+	"node": true,
+    "browser": true,
+    "devel": true,
+    "esnext": true,
+    "boss": true,
+    "eqnull": true,
+    "eqeqeq": false,
+    "expr": true,
+    "notypeof": true,
+    "funcscope": true,
+    "loopfunc": true,
+    "nonstandard": true,
+    "plusplus": false,
+    "undef": false,
+    "unused": false,
+    "globals": {
+        "tdl": true,
+        "c": true,
+        "chroma": true,
+        "twgl": true,
+        "WebGLDebugUtils": true,
+        "WebGLUtils": true
+    }
+}

@@ -1,13 +1,13 @@
 /*eslint-disable no-undef*/
-/*eslint no-unused-vars: ["error", { "vars": "local" }]*/
 /*global some_unused_var*/
 /*eslint-disable nonblock-statement-body-position*/
 "use strict";
-
-tdl.require('tdl.fps');
-tdl.require('tdl.fast');
-tdl.require('tdl.primitives');
-    
+const tdlfps = 'tdl.fps';
+const tdlfast = 'tdl.fast';
+const tdlprim = 'tdl.primitives';
+tdl.require(tdlfps);
+tdl.require(tdlfast);
+tdl.require(tdlprim);   
 if (!window.Float32Array) {
     // This makes errors go away when there is no WebGL.
     window.Float32Array = function() {};
@@ -19,7 +19,7 @@ var bugs = []; // array of bugs verts only
 var bugsArray = []; //local variable to store all bug data
 var btime = 0;
 var bugSize = 0.2;
-var bugSpeed = 5; // interval at which bugs appear
+var bugSpeed = 5; // intervaúl at which bugs appear
 var bugMaxGroups = 10; //max number of bugs
 
 var clock = 0.0;
@@ -128,16 +128,24 @@ const viewProjection = m4.identity();
 var fpsElem = document.getElementById("fps");
 
 const tex = twgl.createTexture(gl, {
-    /*Applies beach ball like texture so that spehere and bug
-     animation can be seen better through lighting effect*/
-    min: gl.NEAREST,
+    /*Applies beach ball or stripe like texture so that spehere and bug
+     animation can be seen better through lighting effect
+     for beachball change to m4*/ 
     mag: gl.NEAREST,
+    min: gl.LINEAR,
+    format: gl.LUMINANCE,
     src: [
-        255, 255, 255, 255,
-        192, 192, 192, 255,
-        192, 192, 192, 255,
-        255, 255, 255, 255,
+      128,
+      255,
+      128,
+      128,
+      255,
+      128,
+      128,
+      255,
+      128, 
     ],
+    width: 1,
 });
 
 const objects = [];
@@ -148,10 +156,10 @@ for (let ii = 0; ii < numObjects; ++ii) {
     const uniforms = {
         u_lightWorldPos: lightWorldPosition,
         u_lightColor: lightColor,
-        u_diffuseMult: chroma.hsv((baseHue + rand(0, 60) % 360), 0.5 + (ii * 0.5), 0.8 + (ii * 0.1)).gl(),
+        u_diffuseMult: chroma.hsv((baseHue + rand(0, 60) % 360), 0.456 + (ii * 0.4), 0.624 + (ii * 0.1)).gl(),
         //u_diffuseMult: chroma.random().hsv().gl(),
         u_specular: [1, 1, 1, 1],
-        u_shininess: 75,
+        u_shininess: 100,
         u_specularFactor: 1,
         u_diffuse: tex,
         u_viewInverse: camera,
@@ -169,7 +177,7 @@ for (let ii = 0; ii < numObjects; ++ii) {
             //translation: [rand(-10, 10), rand(-10, 10), rand(-10, 10)],
             translation: [0.0, 0.0, 0.0],
             ySpeed: rand(0.0, 0.0),
-            zSpeed: rand(0.2, 0.4),
+            zSpeed: rand(0.2, 0.2),
             uniforms: uniforms,
         });
     }
@@ -178,8 +186,8 @@ for (let ii = 0; ii < numObjects; ++ii) {
         objects.push({
             //translation: [rand(-10, 10), rand(-10, 10), rand(-10, 10)],
             translation: [rand(-1, 1), rand(-1, 1), -4.6],
-            ySpeed: rand(0.1, 0.2),
-            zSpeed: rand(0.2, 0.4),
+            ySpeed: rand(0.1, 0.3),
+            zSpeed: rand(-0.3, -0.1),
             uniforms: uniforms,
         });
         let alive = true;
@@ -198,8 +206,8 @@ var createFlattenedVertices = function(gl, vertices) {
     var last;
     return WebGLUtils.createBufferInfoFromArrays(
         gl,
-        primitives.makeRandomVertexColors(
-            primitives.deindexVertices(vertices), {
+        twgl.primitives.makeRandomVertexColors(
+            twgl.primitives.deindexVertices(vertices), {
                 vertsPerColor: 1,
                 rand: function(ndx, channel) {
                     if (channel === 0) {
@@ -306,8 +314,21 @@ requestAnimationFrame(render);
 are alive and match the clicked cods which are stored in the bugsArray.position
 as vector coordinates
 returns true if any match is found - false otherwise*/
+function bugverts(){
+  for (let i=1; i < objects.length; i++){
+    const tx = objects[i].uniforms.u_world[12];
+    const ty = objects[i].uniforms.u_world[13];
+    const tz = objects[i].uniforms.u_world[14];
+    console.log("tx, ty, tz [i]-" + i + ", "+ tx + ", " + ty + ", " + tz);
+    const tw = tx + ty + tz + 1;
+    bugsArray[i-1].position[0] = tx/tw;
+    bugsArray[i-1].position[1] = ty/tw;
+  }
+}
+
 // eslint-disable-next-line strict
 function findClickedBug(clicked) {
+    bugverts();
     for (let i = 0; i < bugs.length; i += 1) {
         const bugx = Math.abs(bugsArray[i].position[0]);
         const bugy = Math.abs(bugsArray[i].position[1]);

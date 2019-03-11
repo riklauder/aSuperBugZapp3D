@@ -10,8 +10,7 @@
 
     -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes"/>
-<meta property="og:description" content="TWGL.js - 2d-lines" />
-<meta property="og:url" content="http://twgljs.org" />
+<meta property="og:url" content="http://lakeheadbedbug.hopto.org" />
 <link rel="stylesheet" href="css/style.css"/>
 <link rel="manifest" href="manifest.json"/>
 <title>A Super Bug Zapper 3D Game</title>
@@ -102,10 +101,7 @@ Oops ... your browser doesn't support the HTML5 canvas element
   uniform float u_specularFactor;
 
   vec4 lit(float l ,float h, float m) {
-    return vec4(1.0,
-                abs(l),//max(l, 0.0),
-                (l > 0.0) ? pow(max(0.0, h), m) : 0.0,
-                1.0);
+    return vec4(1.0, abs(l), (l > 0.0) ? pow(max(0.0, h), m) : 0.0, 1.0);
   }
   /*varying vec4 v_color;
   uniform vec4 u_colorMult;
@@ -125,7 +121,7 @@ Oops ... your browser doesn't support the HTML5 canvas element
   }
 </script>
 <script src="3rdparty/chroma.min.js" charset="utf-8"></script>
-<script src="node_modules/twgl.js/dist/4.x/twgl-full.js" charset="utf-8"></script>
+<script src="node_modules/twgl.js/dist/4.x/twgl-full.js" charset="utf-8" id="twgl"></script>
 <script src="tdl/base.js" charset="utf-8"></script>
 <script src="tdl/fps.js" charset="utf-8"></script>
 <script src="tdl/fast.js" charset="utf-8"></script>

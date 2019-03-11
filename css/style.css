@@ -26,7 +26,7 @@ h4 {
     text-align: center;
     z-index: 2;
 }
-CANVAS, canvas, c {
+CANVAS, c, canvas  {
     display: block;
     width: 100vw;
     height: 100vh;

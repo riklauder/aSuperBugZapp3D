@@ -6,7 +6,7 @@
     },
     "include": [
       "./",
-      "node_modules/twgl.js/dist/4.x",
+      "twgl",
       "js",
       "tdl",
       "common",

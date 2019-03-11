@@ -11,5 +11,10 @@
   "start_url": "index.html",
   "background_color": "#3367D6",
   "display": "standalone",
-  "theme_color": "#3367D6"
+  "theme_color": "#3367D6",
+  "requirements": {
+    "3D": {
+      "features": ["webgl"]
+    }
+  }
 }

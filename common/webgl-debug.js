@@ -1,3 +1,4 @@
+/* eslint-disable strict */
 /* eslint-disable no-var */
 /* eslint-disable no-undef */
 /*
@@ -355,7 +356,7 @@ WebGLDebugUtils = (function() {
   function glFunctionArgToString(functionName, numArgs, argumentIndex, value) {
     var funcInfo = glValidEnumContexts[functionName];
     if (funcInfo !== undefined) {
-      var funcInfo = funcInfo[numArgs];
+      funcInfo = funcInfo[numArgs];
       if (funcInfo !== undefined) {
         if (funcInfo[argumentIndex]) {
           if (typeof funcInfo[argumentIndex] === 'object' &&
@@ -655,7 +656,7 @@ WebGLDebugUtils = (function() {
         if ((ctx instanceof WebGLRenderingContext) || (window.WebGL2RenderingContext && (ctx instanceof WebGL2RenderingContext))) {
           if (ctx != unwrappedContext_) {
             if (unwrappedContext_) {
-              throw "got different context"
+              throw "got different context";
             }
             isWebGL2RenderingContext = window.WebGL2RenderingContext && (ctx instanceof WebGL2RenderingContext);
             unwrappedContext_ = ctx;
