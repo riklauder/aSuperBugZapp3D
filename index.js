@@ -1,18 +1,26 @@
 /*eslint-disable no-undef*/
 /*global some_unused_var*/
 /*eslint-disable nonblock-statement-body-position*/
-"use strict";
+'use strict';
 const tdlfps = 'tdl.fps';
 const tdlfast = 'tdl.fast';
 const tdlprim = 'tdl.primitives';
 tdl.require(tdlfps);
 tdl.require(tdlfast);
-tdl.require(tdlprim);   
+tdl.require(tdlprim);
+
+/*
+import * as twgl from '../../src/twgl.js';
+import * as m4 from '../../src/m4.js';
+import * as primitives from '../../src/primitives.js';
+*/
+
+
 if (!window.Float32Array) {
     // This makes errors go away when there is no WebGL.
     window.Float32Array = function() {};
 }
-
+/*globals*/
 var bugClickedOn = [];
 var bugColors = []; // colors for bugs
 var bugs = []; // array of bugs verts only
@@ -62,7 +70,7 @@ const programInfo = twgl.createProgramInfo(gl, ["vs", "fs"]);
 g_fpsTimer = new tdl.fps.FPSTimer();
 const shapes = [
     //game sphere
-    twgl.primitives.createSphereBufferInfo(gl, 4.6, 48, 24),
+    twgl.primitives.createSphereBufferInfo(gl, 4.5, 48, 24),
     //game-bug
     twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 5),
     twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 5),
@@ -185,7 +193,7 @@ for (let ii = 0; ii < numObjects; ++ii) {
         //add bugs to object for render
         objects.push({
             //translation: [rand(-10, 10), rand(-10, 10), rand(-10, 10)],
-            translation: [rand(-1, 1), rand(-1, 1), -4.6],
+            translation: [rand(-1, 1), rand(-2, 2), -4.5],
             ySpeed: rand(0.1, 0.3),
             zSpeed: rand(-0.3, -0.1),
             uniforms: uniforms,
@@ -204,7 +212,7 @@ for (let ii = 0; ii < numObjects; ++ii) {
 
 var createFlattenedVertices = function(gl, vertices) {
     var last;
-    return WebGLUtils.createBufferInfoFromArrays(
+    return webglUtils.createBufferInfoFromArrays(
         gl,
         twgl.primitives.makeRandomVertexColors(
             twgl.primitives.deindexVertices(vertices), {
@@ -319,41 +327,46 @@ function bugverts(){
     const tx = objects[i].uniforms.u_world[12];
     const ty = objects[i].uniforms.u_world[13];
     const tz = objects[i].uniforms.u_world[14];
-    console.log("tx, ty, tz [i]-" + i + ", "+ tx + ", " + ty + ", " + tz);
-    const tw = tx + ty + tz + 1;
-    bugsArray[i-1].position[0] = tx/tw;
-    bugsArray[i-1].position[1] = ty/tw;
+    const tw = tx + ty + tz;
+    const bugi = i-1;
+    //console.log( "w:"+ tw);
+    bugsArray[i-1].position[0] = (tx)/(-10);
+    bugsArray[i-1].position[1] = (ty)/(-10);
+    if (debug === true){
+      console.log("bug[i:"+bugi+"] x:"+bugsArray[i-1].position[0]+" y:"+bugsArray[i-1].position[1]+
+      "......... "+ tx + ", " + ty + ", " + tz+tw+"<-tx,ty,tz");
+    }
   }
 }
 
 // eslint-disable-next-line strict
 function findClickedBug(clicked) {
-    bugverts();
-    for (let i = 0; i < bugs.length; i += 1) {
-        const bugx = Math.abs(bugsArray[i].position[0]);
-        const bugy = Math.abs(bugsArray[i].position[1]);
-        const bugxl = bugx - 0.2;
-        const bugxh = bugx + 0.2;
-        const bugyl = bugy - 0.2;
-        const bugyh = bugy + 0.2;
-        if (clicked[0] >= bugxl && clicked[0] <= bugxh) {
-            if (clicked[1] >= bugyl && clicked[0] <= bugyh) {
-                bugsArray[i].alive = false;
-                if (debug === true)
-                  console.log("bug kileed at vector: [" + bugx + ", " + bugy + "]");
-                return true;
-            }
-        }
-    }
-    return false;
+  let audioc = new Audio('common/music/click.mp3');
+  bugverts();
+  for (let i = 0; i < bugs.length; i += 1) {
+      const bugx = bugsArray[i].position[0];
+      const bugy = bugsArray[i].position[1];
+      const bugxl = bugx - 0.2;
+      const bugxh = bugx + 0.2;
+      const bugyl = bugy - 0.2;
+      const bugyh = bugy + 0.2;
+      if (clicked[0] >= bugxl && clicked[0] <= bugxh) {
+          if (clicked[1] >= bugyl && clicked[0] <= bugyh) {
+              bugsArray[i].alive = false;
+              audioc.play();
+              if (debug === true)
+                console.log("bug kileed at vector: [" + bugx + ", " + bugy + "]");
+              return true;
+          }
+      }
+  }
+  return false;
 }
 
 /*handlemouse down uses canvas click event x-y coordinates
 maps to origin at centre coordinates, normalizes coordinates to
 a vector using float values for webgl*/
 function handleMouseDown(event) {
-    let audio = new Audio('common/music/click.mp3');
-    audio.play();
     clx = -1 + 2*event.clientX/c.width;
     cly = -1 + 2*(c.height-event.clientY)/c.height;
     //vv = (Math.sqrt((clx * clx) + (cly * cly)));

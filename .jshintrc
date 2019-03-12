@@ -23,6 +23,7 @@
         "chroma": true,
         "twgl": true,
         "WebGLDebugUtils": true,
-        "WebGLUtils": true
+        "WebGLUtils": true,
+        "webglUtils": true
     }
 }

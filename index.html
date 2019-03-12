@@ -43,11 +43,11 @@
     <div class="status">status:  <span id="status"></span></div>
   </div>
 </div>
-<div id="viewContainer">
-<canvas id="c" width="800" height="800">
-Oops ... your browser doesn't support the HTML5 canvas element
-</canvas>
-</div>
+  <div id="viewContainer">
+    <canvas id="c" width="800" height="800">
+    Oops ... your browser doesn't support the HTML5 canvas element
+    </canvas>
+  </div>
 </div>
 <!--WEBGL shaders
     // an attribute will receive data from a buffer
@@ -120,13 +120,16 @@ Oops ... your browser doesn't support the HTML5 canvas element
     gl_FragColor = outColor;
   }
 </script>
-<script src="3rdparty/chroma.min.js" charset="utf-8"></script>
-<script src="node_modules/twgl.js/dist/4.x/twgl-full.js" charset="utf-8" id="twgl"></script>
-<script src="tdl/base.js" charset="utf-8"></script>
-<script src="tdl/fps.js" charset="utf-8"></script>
-<script src="tdl/fast.js" charset="utf-8"></script>
-<script src="index.js" charset="utf-8"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
+<!---<script src="twgl/twgl-full.js"></script>-->
+<script src="3rdparty/chroma.min.js"></script>
+<script src="node_modules/twgl.js/dist/4.x/twgl-full.js"></script>
+<script src="tdl/base.js"></script>
+<script src="tdl/fps.js"></script>
+<script src="tdl/primitives.js"></script>
+<script src="tdl/fast.js"></script>
+<script src="index.js"></script>
+<!---<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>-->
+
 </body>
 
 </html>
