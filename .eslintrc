@@ -7,7 +7,7 @@
         "eslint-plugin-html"
     ],
     "parserOptions": {
-        "sourceType": "script",
+        "sourceType": "module",
         "ecmaVersion": 2015
       },
     "rules": {

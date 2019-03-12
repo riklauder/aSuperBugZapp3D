@@ -1,3 +1,6 @@
+/*uncommeny for project nav and lint - comment for run*/
+//import * as twgl from './node_modules/twgl.js/dist/4.x/twgl-full.js';
+
 /*eslint-disable no-undef*/
 /*global some_unused_var*/
 /*eslint-disable nonblock-statement-body-position*/
@@ -331,7 +334,7 @@ function bugverts(){
     const bugi = i-1;
     //console.log( "w:"+ tw);
     bugsArray[i-1].position[0] = (tx)/(-10);
-    bugsArray[i-1].position[1] = (ty)/(-10);
+    bugsArray[i-1].position[1] = (ty)/(10-1);
     if (debug === true){
       console.log("bug[i:"+bugi+"] x:"+bugsArray[i-1].position[0]+" y:"+bugsArray[i-1].position[1]+
       "......... "+ tx + ", " + ty + ", " + tz+tw+"<-tx,ty,tz");
