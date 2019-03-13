@@ -1,6 +1,3 @@
-/* eslint-disable strict */
-/* eslint-disable no-var */
-/* eslint-disable no-undef */
 /*
 ** Copyright (c) 2012 The Khronos Group Inc.
 **
@@ -26,7 +23,8 @@
 
 // Various functions for helping debug WebGL apps.
 
-WebGLDebugUtils = (function() {
+WebGLDebugUtils = function() {
+
   /**
    * Wrapped logging function.
    * @param {string} msg Message to log.
@@ -36,7 +34,7 @@ WebGLDebugUtils = (function() {
       window.console.log(msg);
     }
   };
-
+  
   /**
    * Wrapped error logging function.
    * @param {string} msg Message to log.
@@ -48,8 +46,8 @@ WebGLDebugUtils = (function() {
       log(msg);
     }
   };
-
-
+  
+  
   /**
    * Which arguments are enums based on the number of arguments to the function.
    * So
@@ -65,30 +63,30 @@ WebGLDebugUtils = (function() {
    */
   var glValidEnumContexts = {
     // Generic setters and getters
-
+  
     'enable': {1: { 0:true }},
     'disable': {1: { 0:true }},
     'getParameter': {1: { 0:true }},
-
+  
     // Rendering
-
+  
     'drawArrays': {3:{ 0:true }},
     'drawElements': {4:{ 0:true, 2:true }},
-
+  
     // Shaders
-
+  
     'createShader': {1: { 0:true }},
     'getShaderParameter': {2: { 1:true }},
     'getProgramParameter': {2: { 1:true }},
     'getShaderPrecisionFormat': {2: { 0: true, 1:true }},
-
+  
     // Vertex attributes
-
+  
     'getVertexAttrib': {2: { 1:true }},
     'vertexAttribPointer': {6: { 2:true }},
-
+  
     // Textures
-
+  
     'bindTexture': {2: { 0:true }},
     'activeTexture': {1: { 0:true }},
     'getTexParameter': {2: { 0:true, 1:true }},
@@ -99,15 +97,15 @@ WebGLDebugUtils = (function() {
     'copyTexSubImage2D': {8: { 0:true }},
     'generateMipmap': {1: { 0:true }},
     // compressedTexImage2D and compressedTexSubImage2D are defined below with WebGL 2 entrypoints
-
+  
     // Buffer objects
-
+  
     'bindBuffer': {2: { 0:true }},
     // bufferData and bufferSubData are defined below with WebGL 2 entrypoints
     'getBufferParameter': {2: { 0:true, 1:true }},
-
+  
     // Renderbuffers and framebuffers
-
+  
     'pixelStorei': {2: { 0:true, 1:true }},
     // readPixels is defined below with WebGL 2 entrypoints
     'bindRenderbuffer': {2: { 0:true }},
@@ -118,9 +116,9 @@ WebGLDebugUtils = (function() {
     'getFramebufferAttachmentParameter': {3: { 0:true, 1:true, 2:true }},
     'getRenderbufferParameter': {2: { 0:true, 1:true }},
     'renderbufferStorage': {4: { 0:true, 1:true }},
-
+  
     // Frame buffer operations (clear, blend, depth test, stencil)
-
+  
     'clear': {1: { 0: { 'enumBitwiseOr': ['COLOR_BUFFER_BIT', 'DEPTH_BUFFER_BIT', 'STENCIL_BUFFER_BIT'] }}},
     'depthFunc': {1: { 0:true }},
     'blendFunc': {2: { 0:true, 1:true }},
@@ -132,23 +130,23 @@ WebGLDebugUtils = (function() {
     'stencilMaskSeparate': {2: { 0:true }},
     'stencilOp': {3: { 0:true, 1:true, 2:true }},
     'stencilOpSeparate': {4: { 0:true, 1:true, 2:true, 3:true }},
-
+  
     // Culling
-
+  
     'cullFace': {1: { 0:true }},
     'frontFace': {1: { 0:true }},
-
+  
     // ANGLE_instanced_arrays extension
-
+  
     'drawArraysInstancedANGLE': {4: { 0:true }},
     'drawElementsInstancedANGLE': {5: { 0:true, 2:true }},
-
+  
     // EXT_blend_minmax extension
-
+  
     'blendEquationEXT': {1: { 0:true }},
-
+  
     // WebGL 2 Buffer objects
-
+  
     'bufferData': {
       3: { 0:true, 2:true }, // WebGL 1
       4: { 0:true, 2:true }, // WebGL 2
@@ -161,22 +159,22 @@ WebGLDebugUtils = (function() {
     },
     'copyBufferSubData': {5: { 0:true, 1:true }},
     'getBufferSubData': {3: { 0:true }, 4: { 0:true }, 5: { 0:true }},
-
+  
     // WebGL 2 Framebuffer objects
-
+  
     'blitFramebuffer': {10: { 8: { 'enumBitwiseOr': ['COLOR_BUFFER_BIT', 'DEPTH_BUFFER_BIT', 'STENCIL_BUFFER_BIT'] }, 9:true }},
     'framebufferTextureLayer': {5: { 0:true, 1:true }},
     'invalidateFramebuffer': {2: { 0:true }},
     'invalidateSubFramebuffer': {6: { 0:true }},
     'readBuffer': {1: { 0:true }},
-
+  
     // WebGL 2 Renderbuffer objects
-
+  
     'getInternalformatParameter': {3: { 0:true, 1:true, 2:true }},
     'renderbufferStorageMultisample': {5: { 0:true, 2:true }},
-
+  
     // WebGL 2 Texture objects
-
+  
     'texStorage2D': {5: { 0:true, 2:true }},
     'texStorage3D': {6: { 0:true, 2:true }},
     'texImage2D': {
@@ -218,78 +216,78 @@ WebGLDebugUtils = (function() {
       11: { 0: true, 8:true },
       12: { 0: true, 8:true }
     },
-
+  
     // WebGL 2 Vertex attribs
-
+  
     'vertexAttribIPointer': {5: { 2:true }},
-
+  
     // WebGL 2 Writing to the drawing buffer
-
+  
     'drawArraysInstanced': {4: { 0:true }},
     'drawElementsInstanced': {5: { 0:true, 2:true }},
     'drawRangeElements': {6: { 0:true, 4:true }},
-
+  
     // WebGL 2 Reading back pixels
-
+  
     'readPixels': {
       7: { 4:true, 5:true }, // WebGL 1 & 2
       8: { 4:true, 5:true }  // WebGL 2
     },
-
+  
     // WebGL 2 Multiple Render Targets
-
+  
     'clearBufferfv': {3: { 0:true }, 4: { 0:true }},
     'clearBufferiv': {3: { 0:true }, 4: { 0:true }},
     'clearBufferuiv': {3: { 0:true }, 4: { 0:true }},
     'clearBufferfi': {4: { 0:true }},
-
+  
     // WebGL 2 Query objects
-
+  
     'beginQuery': {2: { 0:true }},
     'endQuery': {1: { 0:true }},
     'getQuery': {2: { 0:true, 1:true }},
     'getQueryParameter': {2: { 1:true }},
-
+  
     // WebGL 2 Sampler objects
-
+  
     'samplerParameteri': {3: { 1:true, 2:true }},
     'samplerParameterf': {3: { 1:true }},
     'getSamplerParameter': {2: { 1:true }},
-
+  
     // WebGL 2 Sync objects
-
+  
     'fenceSync': {2: { 0:true, 1: { 'enumBitwiseOr': [] } }},
     'clientWaitSync': {3: { 1: { 'enumBitwiseOr': ['SYNC_FLUSH_COMMANDS_BIT'] } }},
     'waitSync': {3: { 1: { 'enumBitwiseOr': [] } }},
     'getSyncParameter': {2: { 1:true }},
-
+  
     // WebGL 2 Transform Feedback
-
+  
     'bindTransformFeedback': {2: { 0:true }},
     'beginTransformFeedback': {1: { 0:true }},
     'transformFeedbackVaryings': {3: { 2:true }},
-
+  
     // WebGL2 Uniform Buffer Objects and Transform Feedback Buffers
-
+  
     'bindBufferBase': {3: { 0:true }},
     'bindBufferRange': {5: { 0:true }},
     'getIndexedParameter': {2: { 0:true }},
     'getActiveUniforms': {3: { 2:true }},
     'getActiveUniformBlockParameter': {3: { 2:true }}
   };
-
+  
   /**
    * Map of numbers to names.
    * @type {Object}
    */
   var glEnums = null;
-
+  
   /**
    * Map of names to numbers.
    * @type {Object}
    */
   var enumStringToValue = null;
-
+  
   /**
    * Initializes this module. Safe to call more than once.
    * @param {!WebGLRenderingContext} ctx A WebGL context. If
@@ -308,7 +306,7 @@ WebGLDebugUtils = (function() {
       }
     }
   }
-
+  
   /**
    * Checks the utils have been initialized.
    */
@@ -317,7 +315,7 @@ WebGLDebugUtils = (function() {
       throw 'WebGLDebugUtils.init(ctx) not called';
     }
   }
-
+  
   /**
    * Returns true or false if value matches any WebGL enum
    * @param {*} value Value to check if it might be an enum.
@@ -327,7 +325,7 @@ WebGLDebugUtils = (function() {
     checkInit();
     return (glEnums[value] !== undefined);
   }
-
+  
   /**
    * Gets an string version of an WebGL enum.
    *
@@ -343,7 +341,7 @@ WebGLDebugUtils = (function() {
     return (name !== undefined) ? ("gl." + name) :
         ("/*UNKNOWN WebGL ENUM*/ 0x" + value.toString(16) + "");
   }
-
+  
   /**
    * Returns the string version of a WebGL argument.
    * Attempts to convert enum arguments to strings.
@@ -356,7 +354,7 @@ WebGLDebugUtils = (function() {
   function glFunctionArgToString(functionName, numArgs, argumentIndex, value) {
     var funcInfo = glValidEnumContexts[functionName];
     if (funcInfo !== undefined) {
-      funcInfo = funcInfo[numArgs];
+      var funcInfo = funcInfo[numArgs];
       if (funcInfo !== undefined) {
         if (funcInfo[argumentIndex]) {
           if (typeof funcInfo[argumentIndex] === 'object' &&
@@ -390,7 +388,7 @@ WebGLDebugUtils = (function() {
       return value.toString();
     }
   }
-
+  
   /**
    * Converts the arguments of a WebGL function to a string.
    * Attempts to convert enum arguments to strings.
@@ -409,8 +407,8 @@ WebGLDebugUtils = (function() {
     }
     return argStr;
   };
-
-
+  
+  
   function makePropertyWrapper(wrapper, original, propertyName) {
     //log("wrap prop: " + propertyName);
     wrapper.__defineGetter__(propertyName, function() {
@@ -423,7 +421,7 @@ WebGLDebugUtils = (function() {
       original[propertyName] = value;
     });
   }
-
+  
   // Makes a function that calls a function on another object.
   function makeFunctionWrapper(original, functionName) {
     //log("wrap fn: " + functionName);
@@ -434,7 +432,7 @@ WebGLDebugUtils = (function() {
       return result;
     };
   }
-
+  
   /**
    * Given a WebGL context returns a wrapped context that calls
    * gl.getError after every command and calls a function if the
@@ -466,11 +464,11 @@ WebGLDebugUtils = (function() {
           error("WebGL error "+ glEnumToString(err) + " in "+ functionName +
                 "(" + argStr + ")");
         };
-
+  
     // Holds booleans for each GL error so after we get the error ourselves
     // we can still return it to the client app.
     var glErrorShadow = { };
-
+  
     // Makes a function that calls a WebGL function and then calls getError.
     function makeErrorWrapper(ctx, functionName) {
       return function() {
@@ -486,7 +484,7 @@ WebGLDebugUtils = (function() {
         return result;
       };
     }
-
+  
     // Make a an object that has a copy of every property of the WebGL context
     // but wraps all functions.
     var wrapper = {};
@@ -508,7 +506,7 @@ WebGLDebugUtils = (function() {
         makePropertyWrapper(wrapper, ctx, propertyName);
       }
     }
-
+  
     // Override the getError function with one that returns our saved results.
     wrapper.getError = function() {
       for (var err in glErrorShadow) {
@@ -521,17 +519,17 @@ WebGLDebugUtils = (function() {
       }
       return ctx.NO_ERROR;
     };
-
+  
     return wrapper;
   }
-
+  
   function resetToInitialState(ctx) {
     var isWebGL2RenderingContext = !!ctx.createTransformFeedback;
-
+  
     if (isWebGL2RenderingContext) {
       ctx.bindVertexArray(null);
     }
-
+  
     var numAttribs = ctx.getParameter(ctx.MAX_VERTEX_ATTRIBS);
     var tmp = ctx.createBuffer();
     ctx.bindBuffer(ctx.ARRAY_BUFFER, tmp);
@@ -544,7 +542,7 @@ WebGLDebugUtils = (function() {
       }
     }
     ctx.deleteBuffer(tmp);
-
+  
     var numTextureUnits = ctx.getParameter(ctx.MAX_TEXTURE_IMAGE_UNITS);
     for (var ii = 0; ii < numTextureUnits; ++ii) {
       ctx.activeTexture(ctx.TEXTURE0 + ii);
@@ -556,7 +554,7 @@ WebGLDebugUtils = (function() {
         ctx.bindSampler(ii, null);
       }
     }
-
+  
     ctx.activeTexture(ctx.TEXTURE0);
     ctx.useProgram(null);
     ctx.bindBuffer(ctx.ARRAY_BUFFER, null);
@@ -598,7 +596,7 @@ WebGLDebugUtils = (function() {
     ctx.stencilOp(ctx.KEEP, ctx.KEEP, ctx.KEEP);
     ctx.viewport(0, 0, ctx.canvas.width, ctx.canvas.height);
     ctx.clear(ctx.COLOR_BUFFER_BIT | ctx.DEPTH_BUFFER_BIT | ctx.STENCIL_BUFFER_BIT);
-
+  
     if (isWebGL2RenderingContext) {
       ctx.drawBuffers([ctx.BACK]);
       ctx.readBuffer(ctx.BACK);
@@ -625,11 +623,11 @@ WebGLDebugUtils = (function() {
       ctx.pixelStorei(ctx.PACK_SKIP_PIXELS, 0);
       ctx.hint(ctx.FRAGMENT_SHADER_DERIVATIVE_HINT, ctx.DONT_CARE);
     }
-
+  
     // TODO: This should NOT be needed but Firefox fails with 'hint'
     while(ctx.getError());
   }
-
+  
   function makeLostContextSimulatingCanvas(canvas) {
     var unwrappedContext_;
     var wrappedContext_;
@@ -645,10 +643,10 @@ WebGLDebugUtils = (function() {
     var canRestore_ = false;
     var restoreTimeout_ = 0;
     var isWebGL2RenderingContext;
-
+  
     // Holds booleans for each GL error so can simulate errors.
     var glErrorShadow_ = { };
-
+  
     canvas.getContext = function(f) {
       return function() {
         var ctx = f.apply(canvas, arguments);
@@ -656,7 +654,7 @@ WebGLDebugUtils = (function() {
         if ((ctx instanceof WebGLRenderingContext) || (window.WebGL2RenderingContext && (ctx instanceof WebGL2RenderingContext))) {
           if (ctx != unwrappedContext_) {
             if (unwrappedContext_) {
-              throw "got different context";
+              throw "got different context"
             }
             isWebGL2RenderingContext = window.WebGL2RenderingContext && (ctx instanceof WebGL2RenderingContext);
             unwrappedContext_ = ctx;
@@ -667,7 +665,7 @@ WebGLDebugUtils = (function() {
         return ctx;
       }
     }(canvas.getContext);
-
+  
     function wrapEvent(listener) {
       if (typeof(listener) == "function") {
         return listener;
@@ -677,16 +675,16 @@ WebGLDebugUtils = (function() {
         }
       }
     }
-
+  
     var addOnContextLostListener = function(listener) {
       onLost_.push(wrapEvent(listener));
     };
-
+  
     var addOnContextRestoredListener = function(listener) {
       onRestored_.push(wrapEvent(listener));
     };
-
-
+  
+  
     function wrapAddEventListener(canvas) {
       var f = canvas.addEventListener;
       canvas.addEventListener = function(type, listener, bubble) {
@@ -702,9 +700,9 @@ WebGLDebugUtils = (function() {
         }
       };
     }
-
+  
     wrapAddEventListener(canvas);
-
+  
     canvas.loseContext = function() {
       if (!contextLost_) {
         contextLost_ = true;
@@ -729,7 +727,7 @@ WebGLDebugUtils = (function() {
           }, 0);
       }
     };
-
+  
     canvas.restoreContext = function() {
       if (contextLost_) {
         if (onRestored_.length) {
@@ -751,22 +749,22 @@ WebGLDebugUtils = (function() {
         }
       }
     };
-
+  
     canvas.loseContextInNCalls = function(numCalls) {
       if (contextLost_) {
         throw "You can not ask a lost contet to be lost";
       }
       numCallsToLoseContext_ = numCalls_ + numCalls;
     };
-
+  
     canvas.getNumCalls = function() {
       return numCalls_;
     };
-
+  
     canvas.setRestoreTimeout = function(timeout) {
       restoreTimeout_ = timeout;
     };
-
+  
     function isWebGLObject(obj) {
       //return false;
       return (obj instanceof WebGLBuffer ||
@@ -776,7 +774,7 @@ WebGLDebugUtils = (function() {
               obj instanceof WebGLShader ||
               obj instanceof WebGLTexture);
     }
-
+  
     function checkResources(args) {
       for (var ii = 0; ii < args.length; ++ii) {
         var arg = args[ii];
@@ -786,14 +784,14 @@ WebGLDebugUtils = (function() {
       }
       return true;
     }
-
+  
     function clearErrors() {
       var k = Object.keys(glErrorShadow_);
       for (var ii = 0; ii < k.length; ++ii) {
         delete glErrorShadow_[k[ii]];
       }
     }
-
+  
     function loseContextIfTime() {
       ++numCalls_;
       if (!contextLost_) {
@@ -802,7 +800,7 @@ WebGLDebugUtils = (function() {
         }
       }
     }
-
+  
     // Makes a function that simulates WebGL when out of context.
     function makeLostContextFunctionWrapper(ctx, functionName) {
       var f = ctx[functionName];
@@ -820,7 +818,7 @@ WebGLDebugUtils = (function() {
         }
       };
     }
-
+  
     function freeResources() {
       for (var ii = 0; ii < resourceDb_.length; ++ii) {
         var resource = resourceDb_[ii];
@@ -852,7 +850,7 @@ WebGLDebugUtils = (function() {
         }
       }
     }
-
+  
     function makeWebGLContextEvent(statusMessage) {
       return {
         statusMessage: statusMessage,
@@ -861,9 +859,9 @@ WebGLDebugUtils = (function() {
           }
       };
     }
-
+  
     return canvas;
-
+  
     function makeLostContextSimulatingContext(ctx) {
       // copy all functions and properties to wrapper
       for (var propertyName in ctx) {
@@ -874,7 +872,7 @@ WebGLDebugUtils = (function() {
            makePropertyWrapper(wrappedContext_, ctx, propertyName);
          }
       }
-
+  
       // Wrap a few functions specially.
       wrappedContext_.getError = function() {
         loseContextIfTime();
@@ -892,7 +890,7 @@ WebGLDebugUtils = (function() {
         }
         return wrappedContext_.NO_ERROR;
       };
-
+  
       var creationFunctions = [
         "createBuffer",
         "createFramebuffer",
@@ -925,7 +923,7 @@ WebGLDebugUtils = (function() {
           };
         }(ctx[functionName]);
       }
-
+  
       var functionsThatShouldReturnNull = [
         "getActiveAttrib",
         "getActiveUniform",
@@ -972,7 +970,7 @@ WebGLDebugUtils = (function() {
           }
         }(wrappedContext_[functionName]);
       }
-
+  
       var isFunctions = [
         "isBuffer",
         "isEnabled",
@@ -1003,7 +1001,7 @@ WebGLDebugUtils = (function() {
           }
         }(wrappedContext_[functionName]);
       }
-
+  
       wrappedContext_.checkFramebufferStatus = function(f) {
         return function() {
           loseContextIfTime();
@@ -1013,7 +1011,7 @@ WebGLDebugUtils = (function() {
           return f.apply(ctx, arguments);
         };
       }(wrappedContext_.checkFramebufferStatus);
-
+  
       wrappedContext_.getAttribLocation = function(f) {
         return function() {
           loseContextIfTime();
@@ -1023,7 +1021,7 @@ WebGLDebugUtils = (function() {
           return f.apply(ctx, arguments);
         };
       }(wrappedContext_.getAttribLocation);
-
+  
       wrappedContext_.getVertexAttribOffset = function(f) {
         return function() {
           loseContextIfTime();
@@ -1033,11 +1031,11 @@ WebGLDebugUtils = (function() {
           return f.apply(ctx, arguments);
         };
       }(wrappedContext_.getVertexAttribOffset);
-
+  
       wrappedContext_.isContextLost = function() {
         return contextLost_;
       };
-
+  
       if (isWebGL2RenderingContext) {
         wrappedContext_.getFragDataLocation = function(f) {
           return function() {
@@ -1048,7 +1046,7 @@ WebGLDebugUtils = (function() {
             return f.apply(ctx, arguments);
           };
         }(wrappedContext_.getFragDataLocation);
-
+  
         wrappedContext_.clientWaitSync = function(f) {
           return function() {
             loseContextIfTime();
@@ -1058,7 +1056,7 @@ WebGLDebugUtils = (function() {
             return f.apply(ctx, arguments);
           };
         }(wrappedContext_.clientWaitSync);
-
+  
         wrappedContext_.getUniformBlockIndex = function(f) {
           return function() {
             loseContextIfTime();
@@ -1069,11 +1067,11 @@ WebGLDebugUtils = (function() {
           };
         }(wrappedContext_.getUniformBlockIndex);
       }
-
+  
       return wrappedContext_;
     }
   }
-
+  
   return {
     /**
      * Initializes this module. Safe to call more than once.
@@ -1082,14 +1080,14 @@ WebGLDebugUtils = (function() {
      *    you pass in, it is only used to pull out constants.
      */
     'init': init,
-
+  
     /**
      * Returns true or false if value matches any WebGL enum
      * @param {*} value Value to check if it might be an enum.
      * @return {boolean} True if value matches one of the WebGL defined enums
      */
     'mightBeEnum': mightBeEnum,
-
+  
     /**
      * Gets an string version of an WebGL enum.
      *
@@ -1101,7 +1099,7 @@ WebGLDebugUtils = (function() {
      * @return {string} The string version of the enum.
      */
     'glEnumToString': glEnumToString,
-
+  
     /**
      * Converts the argument of a WebGL function to a string.
      * Attempts to convert enum arguments to strings.
@@ -1119,7 +1117,7 @@ WebGLDebugUtils = (function() {
      * @return {string} The value as a string.
      */
     'glFunctionArgToString': glFunctionArgToString,
-
+  
     /**
      * Converts the arguments of a WebGL function to a string.
      * Attempts to convert enum arguments to strings.
@@ -1129,7 +1127,7 @@ WebGLDebugUtils = (function() {
      * @return {string} The arguments as a string.
      */
     'glFunctionArgsToString': glFunctionArgsToString,
-
+  
     /**
      * Given a WebGL context returns a wrapped context that calls
      * gl.getError after every command and calls a function if the
@@ -1155,7 +1153,7 @@ WebGLDebugUtils = (function() {
      *     can use this to log all calls for example.
      */
     'makeDebugContext': makeDebugContext,
-
+  
     /**
      * Given a canvas element returns a wrapped canvas element that will
      * simulate lost context. The canvas returned adds the following functions.
@@ -1180,7 +1178,7 @@ WebGLDebugUtils = (function() {
      * @param {!Canvas} canvas The canvas element to wrap.
      */
     'makeLostContextSimulatingCanvas': makeLostContextSimulatingCanvas,
-
+  
     /**
      * Resets a context to the initial state.
      * @param {!WebGLRenderingContext} ctx The webgl context to
@@ -1188,5 +1186,7 @@ WebGLDebugUtils = (function() {
      */
     'resetToInitialState': resetToInitialState
   };
-
-  }());
+  
+  }();
+  
+  

@@ -1,23 +1,16 @@
 /*uncommeny for project nav and lint - comment for run*/
-//import * as twgl from './node_modules/twgl.js/dist/4.x/twgl-full.js';
+//import * as twgl from './node_modules/twgl.js/dist/4.x/twgl-full';
+//import { StringDecoder } from 'string_decoder';
 
 /*eslint-disable no-undef*/
 /*global some_unused_var*/
 /*eslint-disable nonblock-statement-body-position*/
-'use strict';
 const tdlfps = 'tdl.fps';
 const tdlfast = 'tdl.fast';
 const tdlprim = 'tdl.primitives';
 tdl.require(tdlfps);
 tdl.require(tdlfast);
 tdl.require(tdlprim);
-
-/*
-import * as twgl from '../../src/twgl.js';
-import * as m4 from '../../src/m4.js';
-import * as primitives from '../../src/primitives.js';
-*/
-
 
 if (!window.Float32Array) {
     // This makes errors go away when there is no WebGL.
@@ -29,21 +22,30 @@ var bugColors = []; // colors for bugs
 var bugs = []; // array of bugs verts only
 var bugsArray = []; //local variable to store all bug data
 var btime = 0;
-var bugSize = 0.2;
+var bugSize = 0.25;
 var bugSpeed = 5; // intervaúl at which bugs appear
-var bugMaxGroups = 10; //max number of bugs
+var bugMaxGroups = 10; //max num bugs per group
+var bugGroupsN = 5;//active bug groups in game
+var bugsgroup = document.getElementById("bugsgroup");
+var bugsgroupu= 10;//active bug groups in game
+var bugsdead = document.getElementById("bugsdead");
+var bugsdeadu = 0;//sum of killed bugs
+var bugscount=0;
+var bugstotal = document.getElementById("bugstotal");
+var bugstotalu = 0;
+const numb = 99;//max bugs to buffer
 
 var clock = 0.0;
 var clx, cly;
 var clicked;
 var colors;
-var currBugs = 0;
 var debug = true;
-var eye;
+var diskSpeed = [1.0, 0.3, 0.2];//initial movement speed for 3D disk
 var eyeClock = 0;
 var frameCount = 0;
 var g_fpsTimer;
-var gamePoints = 0;
+var gamescore = document.getElementById("gamescore");
+var gamescoreu = 0;
 var incrementer = 0;
 var index = 0;
 var localMatrix;
@@ -56,6 +58,9 @@ var pointSize = 10;
 var poisonIncrementer = [];
 var projectionMatrix;
 var radiusOfCircle = 0.4;
+var stime = document.getElementById("stime");
+var statusu = 0;
+
 var then = 0.0;
 //var twgl;
 var vertices = [];
@@ -71,22 +76,115 @@ const m4 = twgl.m4;
 const gl = document.querySelector("#c").getContext("webgl");
 const programInfo = twgl.createProgramInfo(gl, ["vs", "fs"]);
 g_fpsTimer = new tdl.fps.FPSTimer();
+
+//combine shapes object for bufer
 const shapes = [
-    //game sphere
-    twgl.primitives.createSphereBufferInfo(gl, 4.5, 48, 24),
-    //game-bug
-    twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 5),
-    twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 5),
-    twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 5),
-    twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 5),
-    twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 5),
-    twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 5),
-    twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 5),
-  ];
+  twgl.primitives.createSphereBufferInfo(gl, 5, 48, 24),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
+];
 
 var ctx = WebGLDebugUtils.makeDebugContext(c.getContext("webgl"));
 WebGLDebugUtils.init(ctx);
-//alert(WebGLDebugUtils.glEnumToString(ctx.getError()));
+
 /* Helps setup parent child scene relationships*/
 /*var Node = function() {
       this.children = [];
@@ -126,8 +224,44 @@ WebGLDebugUtils.init(ctx);
       });
   };*/
 
+/*game functions*/
 function rand(min, max) {
+    if (max === undefined) {
+      max = min;
+      min = 0;
+    }
     return min + Math.random() * (max - min);
+}
+
+function deathToll(){
+  bugsdeadu=0;
+  bugsArray.forEach(function(obj){ 
+    if (obj.alive == false) bugsdeadu++;
+  });
+}
+
+function bugCount(){
+  if (bugscount >=1){
+    bugstotalu = Math.min(bugscount,bugsArray.length);
+    bugstotalu -= bugsdeadu;
+  }
+}
+
+function stupdate(){
+  return btime;
+}
+
+function gameupdate(){
+  deathToll();
+  bugsdead.innerHTML = bugsdeadu;
+  gamescoreu=btime;
+  gamescore.innerHTML = gamescoreu+bugsdeadu*10;
+  bugCount();
+  bugstotal.innerHTML = bugstotalu;
+  bugsgroupu = Math.ceil((bugstotalu/bugMaxGroups));
+  bugsgroup.innerHTML = bugsgroupu;
+  statusu = stupdate();
+  stime.innerHTML = statusu;
 }
 
 // Shared values
@@ -146,28 +280,29 @@ const tex = twgl.createTexture(gl, {
     min: gl.LINEAR,
     format: gl.LUMINANCE,
     src: [
-      128,
-      255,
-      128,
-      128,
-      255,
-      128,
-      128,
-      255,
       128, 
+      255, 
+      128, 
+      128, 
+      255, 
+      128, 
+      128, 
+      255, 
+      128,  
     ],
     width: 1,
 });
 
 const objects = [];
 const drawObjects = [];
-const numObjects = 8;
-for (let ii = 0; ii < numObjects; ++ii) {
+const numObjects = 100;
+/*
+function msphere(){
     const baseHue = rand(0, 360);
     const uniforms = {
         u_lightWorldPos: lightWorldPosition,
         u_lightColor: lightColor,
-        u_diffuseMult: chroma.hsv((baseHue + rand(0, 60) % 360), 0.456 + (ii * 0.4), 0.624 + (ii * 0.1)).gl(),
+        u_diffuseMult: chroma.hsv((baseHue + rand(0, 60) % 360), 0.6 , 0.8 ).gl(),
         //u_diffuseMult: chroma.random().hsv().gl(),
         u_specular: [1, 1, 1, 1],
         u_shininess: 100,
@@ -180,42 +315,124 @@ for (let ii = 0; ii < numObjects; ++ii) {
     };
     drawObjects.push({
         programInfo: programInfo,
-        bufferInfo: shapes[ii % shapes.length],
+        bufferInfo: shapes,
         uniforms: uniforms,
     });
-    if (ii === 0) {
-        objects.push({
+      objects.push({
             //translation: [rand(-10, 10), rand(-10, 10), rand(-10, 10)],
             translation: [0.0, 0.0, 0.0],
-            ySpeed: rand(0.0, 0.0),
-            zSpeed: rand(0.2, 0.2),
+            xSpeed: diskSpeed[0],
+            ySpeed: diskSpeed[1],
+            zSpeed: diskSpeed[2],
             uniforms: uniforms,
         });
-    }
-    if (ii > 0) {
-        //add bugs to object for render
-        objects.push({
-            //translation: [rand(-10, 10), rand(-10, 10), rand(-10, 10)],
-            translation: [rand(-1, 1), rand(-2, 2), -4.5],
-            ySpeed: rand(0.1, 0.3),
-            zSpeed: rand(-0.3, -0.1),
-            uniforms: uniforms,
-        });
-        let alive = true;
-        let position = [objects[ii].translation[0], objects[ii].translation[1]];
-        let bug = {};
-        bug.position = position;
-        bug.alive = alive;
-        bugs.push(position);
-        bugsArray.push(bug);
+  }
+  msphere();
+
         //need functin to calculate clickable bug space verts
         //push(bugs);
-    }
+
+/* Bug Prep*/
+
+const texb = twgl.createTexture(gl, {
+  //Applies bug lined textures*
+  mag: gl.NEAREST,
+  min: gl.LINEAR,
+  format: gl.LUMINANCE,
+  src: [
+    128, 255,128, 255,128, 255,128, 255,
+    255, 128,255, 128,255, 128,255, 128,
+    128, 255,128, 255,128, 255,128, 255,
+    255, 128,255, 128,255, 128,255, 128,
+    128, 255,128, 255,128, 255,128, 255,
+    255, 128,255, 128,255, 128,255, 128,
+    128, 255,128, 255,128, 255,128, 255,
+    255, 128,255, 128,255, 128,255, 128,
+    128, 255,128, 255,128, 255,128, 255, 
+  ],
+  width: 1,
+});
+
+for (let i = 0; i < numObjects; i++) {
+  const baseHueb = rand(0, 360);
+  if (i === 0){
+  const uniforms = {
+      u_lightWorldPos: lightWorldPosition,
+      u_lightColor: lightColor,
+      u_diffuseMult: chroma.hsv((baseHueb + rand(0, 60) % 360), 0.6 , 0.8 ).gl(),
+      //u_diffuseMult: chroma.random().hsv().gl(),
+      u_specular: [1, 1, 1, 1],
+      u_shininess: 100,
+      u_specularFactor: 1,
+      u_diffuse: tex,
+      u_viewInverse: camera,
+      u_world: m4.identity(),
+      u_worldInverseTranspose: m4.identity(),
+      u_worldViewProjection: m4.identity(),
+  };
+    drawObjects.push({
+      programInfo: programInfo,
+      bufferInfo: shapes[i%shapes.length],
+      uniforms: uniforms,
+  });
+    objects.push({
+          //translation: [rand(-10, 10), rand(-10, 10), rand(-10, 10)],
+          translation: [0.0, 0.0, 0.0],
+          xSpeed: diskSpeed[0],
+          ySpeed: diskSpeed[1],
+          zSpeed: diskSpeed[2],
+          uniforms: uniforms,
+      });
+  }
+  if (i > 0) {
+    const uniforms = {
+      u_lightWorldPos: lightWorldPosition,
+      u_lightColor: lightColor,
+      u_diffuseMult: chroma.hsv((baseHueb + rand(0, 60) % 360), 0.6 , 0.8 ).gl(),
+      //u_diffuseMult: chroma.random().hsv().gl(),
+      u_specular: [1, 1, 1, 1],
+      u_shininess: 100,
+      u_specularFactor: 1,
+      u_diffuse: texb,
+      u_viewInverse: camera,
+      u_world: m4.identity(),
+      u_worldInverseTranspose: m4.identity(),
+      u_worldViewProjection: m4.identity(),
+    };
+    drawObjects.push({
+        programInfo: programInfo,
+        bufferInfo: shapes[i%shapes.length],
+        uniforms: uniforms,
+    });
+    var switx=rand(0, 1.0);
+    var switz=-4.9;
+    if (i % 2 == 0){
+      switx=rand(-1.0,0);
+      switz = 4.9;
+      }
+    objects.push({
+          //translation: [rand(-10, 10), rand(-10, 10), rand(-10, 10)],
+          translation: [switx, rand(-1.5, 1.5), switz],
+          xSpeed: 0.5,
+          ySpeed: rand(0, 0.2),
+          zSpeed: rand(-0.1, 0.4),
+          uniforms: uniforms,
+      });
+    let alive = true;
+    let position = [objects[i].translation[0], objects[i].translation[1]];
+    let bug = {};
+    bug.position = position;
+    bug.alive = alive;
+    bug.ySpeed =objects[i].ySpeed;
+    bug.zSpeed =objects[i].zSpeed;
+    bugs.push(position);
+    bugsArray.push(bug);
+  }
 }
 
 var createFlattenedVertices = function(gl, vertices) {
     var last;
-    return webglUtils.createBufferInfoFromArrays(
+    return WebGLUtils.createBufferInfoFromArrays(
         gl,
         twgl.primitives.makeRandomVertexColors(
             twgl.primitives.deindexVertices(vertices), {
@@ -265,7 +482,8 @@ objects = [
   ];
 */
 
-
+const r = [];
+const drawRenders= [];
 /*RENDER TIME - 3of3 -ear and set the viewport and other global state
  --call gl.useProgram, setup uniforms, gl.drawArrays, gl.drawElemetns
   */
@@ -273,9 +491,11 @@ function render(time) {
     time *= 0.001;
     c.onmousedown = handleMouseDown;
     ++frameCount;
-    if (frameCount % 60 === 0)
+    if (frameCount % 60 === 0){
         btime += 1;
-    bugSize = (btime / 10) + 0.5;
+        if (btime % bugSpeed == 0)
+          bugscount = Math.min((btime / bugSpeed), numObjects);
+    }
     var now = (new Date()).getTime() * 0.001;
     var elapsedTime;
     if (then === 0.0) {
@@ -293,7 +513,7 @@ function render(time) {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     const projection = m4.perspective(30 * Math.PI / 180, gl.canvas.clientWidth / gl.canvas.clientHeight, 0.5, 100);
-    const eye = [1, 4, -20];
+    const eye = [1, 1, -20];
     const target = [0, 0, 0];
     const up = [0, 1, 0];
 
@@ -303,21 +523,26 @@ function render(time) {
     m4.lookAt(eye, target, up, camera);
     m4.inverse(camera, view);
     m4.multiply(projection, view, viewProjection);
-
-    objects.forEach(function(obj) {
-        const uni = obj.uniforms;
-        const world = uni.u_world;
-        m4.identity(world);
-        m4.rotateY(world, time * obj.ySpeed, world);
-        m4.rotateZ(world, time * obj.zSpeed, world);
-        m4.translate(world, obj.translation, world);
-        m4.rotateX(world, time, world);
-        m4.transpose(m4.inverse(world, uni.u_worldInverseTranspose), uni.u_worldInverseTranspose);
-        m4.multiply(viewProjection, uni.u_world, uni.u_worldViewProjection);
-    });
-
-    twgl.drawObjectList(gl, drawObjects);
+    
+    if (r.length <= bugscount)
+          r.push(objects[bugscount]);
+    
+    r.forEach(function(obj){
+      const uni = obj.uniforms;
+      const world = uni.u_world;
+      m4.identity(world);
+      m4.rotateY(world, time * obj.ySpeed, world);
+      m4.rotateZ(world, time * obj.zSpeed, world);
+      m4.translate(world, obj.translation, world);
+      m4.rotateX(world, obj.xSpeed, world);
+      m4.transpose(m4.inverse(world, uni.u_worldInverseTranspose), uni.u_worldInverseTranspose);
+      m4.multiply(viewProjection, uni.u_world, uni.u_worldViewProjection);
+      });
+    if (drawRenders.length <= bugscount)
+      drawRenders.push(drawObjects[bugscount]);
+    twgl.drawObjectList(gl, drawRenders);
     requestAnimationFrame(render);
+    gameupdate();
 }
 requestAnimationFrame(render);
 
@@ -333,11 +558,13 @@ function bugverts(){
     const tw = tx + ty + tz;
     const bugi = i-1;
     //console.log( "w:"+ tw);
-    bugsArray[i-1].position[0] = (tx)/(-10);
-    bugsArray[i-1].position[1] = (ty)/(10-1);
+    bugsArray[i-1].position[0] = (tx/tz)/(-9/tz);
+    bugsArray[i-1].position[1] = (ty/tz)/(5/tz);
+    bugsArray[i-1].position[2] = tz;
     if (debug === true){
-      console.log("bug[i:"+bugi+"] x:"+bugsArray[i-1].position[0]+" y:"+bugsArray[i-1].position[1]+
-      "......... "+ tx + ", " + ty + ", " + tz+tw+"<-tx,ty,tz");
+      console.log("bug["+bugi+"] x:"+bugsArray[i-1].position[0]+" y:"+bugsArray[i-1].position[1]+
+      ".........    " +"tx,ty,tz.tw" + tx + ", " + ty + ", " + tz+" "+tw);
+      //console.log("U_WORLD:" + objects[i].uniforms.u_world);
     }
   }
 }
@@ -347,22 +574,24 @@ function findClickedBug(clicked) {
   let audioc = new Audio('common/music/click.mp3');
   bugverts();
   for (let i = 0; i < bugs.length; i += 1) {
-      const bugx = bugsArray[i].position[0];
-      const bugy = bugsArray[i].position[1];
-      const bugxl = bugx - 0.2;
-      const bugxh = bugx + 0.2;
-      const bugyl = bugy - 0.2;
-      const bugyh = bugy + 0.2;
-      if (clicked[0] >= bugxl && clicked[0] <= bugxh) {
-          if (clicked[1] >= bugyl && clicked[0] <= bugyh) {
+      if (bugsArray[i].position[2] < 0){
+        const bugx = bugsArray[i].position[0];
+        const bugy = bugsArray[i].position[1];
+        const bugxl = (Math.abs(clicked[0] - bugx));
+        const bugyl = (Math.abs(clicked[1] - bugy));
+        if (debug === true)
+          console.log("bugxl, bugxy < size " + bugxl +", " + bugyl+"<"+bugSize);
+        if ((bugxl < bugSize) && (bugyl < bugSize)) {
               bugsArray[i].alive = false;
               audioc.play();
-              if (debug === true)
-                console.log("bug kileed at vector: [" + bugx + ", " + bugy + "]");
+              if (debug === true){
+                console.log("bug killed at vector: [" + bugx + ", " + bugy + "]");
+              }
+              deathToll();
               return true;
+              }
           }
       }
-  }
   return false;
 }
 
