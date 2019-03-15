@@ -23,7 +23,7 @@ var bugs = []; // array of bugs verts only
 var bugsArray = []; //local variable to store all bug data
 var btime = 0;
 var bugSize = 0.25;
-var bugSpeed = 5; // intervaúl at which bugs appear
+var bugSpeed = 4; // intervaúl at which bugs appear
 var bugMaxGroups = 10; //max num bugs per group
 var bugGroupsN = 5;//active bug groups in game
 var bugsgroup = document.getElementById("bugsgroup");
@@ -33,7 +33,9 @@ var bugsdeadu = 0;//sum of killed bugs
 var bugscount=0;
 var bugstotal = document.getElementById("bugstotal");
 var bugstotalu = 0;
-const numb = 99;//max bugs to buffer
+const bugObituary = [];//store index of all bugs marked dead
+const numb = 159;//max bugs to buffer
+const bdead = true;
 
 var clock = 0.0;
 var clx, cly;
@@ -47,7 +49,6 @@ var g_fpsTimer;
 var gamescore = document.getElementById("gamescore");
 var gamescoreu = 0;
 var incrementer = 0;
-var index = 0;
 var localMatrix;
 var modelViewMatrix;
 var noOfBugPoints = 1600;
@@ -72,115 +73,21 @@ var WorldMatrix;
 create shaders, create vertexes, upload to buffers
 create textures and upload to buffers*/
 twgl.setDefaults({ attribPrefix: "a_" });
+twgl.setDefaults({enableVertexArrayObjects: true});
 const m4 = twgl.m4;
 const gl = document.querySelector("#c").getContext("webgl");
 const programInfo = twgl.createProgramInfo(gl, ["vs", "fs"]);
 g_fpsTimer = new tdl.fps.FPSTimer();
+//The master sphere vArrrayAttribBuffers
+const sphere = twgl.primitives.createSphereBufferInfo(gl, 5, 48, 24);
+//the game bugs
+const bugbuff = twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4);
 
-//combine shapes object for bufer
-const shapes = [
-  twgl.primitives.createSphereBufferInfo(gl, 5, 48, 24),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-  twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4),
-];
+//combine all vertex buffers
+const shapes = [];
+shapes.push(sphere);
+for (i=0; i< numb;i++)
+  shapes.push(bugbuff);
 
 var ctx = WebGLDebugUtils.makeDebugContext(c.getContext("webgl"));
 WebGLDebugUtils.init(ctx);
@@ -233,11 +140,13 @@ function rand(min, max) {
     return min + Math.random() * (max - min);
 }
 
-function deathToll(){
-  bugsdeadu=0;
-  bugsArray.forEach(function(obj){ 
-    if (obj.alive == false) bugsdeadu++;
-  });
+function deathToll(indx){
+  bugsdeadu++;
+  bugObituary.push(indx);
+  //
+  //r.pop(indx);
+  //drawRenders.pop(indx);
+  //drawObjects.pop(indx);
 }
 
 function bugCount(){
@@ -252,7 +161,6 @@ function stupdate(){
 }
 
 function gameupdate(){
-  deathToll();
   bugsdead.innerHTML = bugsdeadu;
   gamescoreu=btime;
   gamescore.innerHTML = gamescoreu+bugsdeadu*10;
@@ -355,6 +263,7 @@ const texb = twgl.createTexture(gl, {
 
 for (let i = 0; i < numObjects; i++) {
   const baseHueb = rand(0, 360);
+  const id = i;
   if (i === 0){
   const uniforms = {
       u_lightWorldPos: lightWorldPosition,
@@ -377,6 +286,7 @@ for (let i = 0; i < numObjects; i++) {
   });
     objects.push({
           //translation: [rand(-10, 10), rand(-10, 10), rand(-10, 10)],
+          id: id,
           translation: [0.0, 0.0, 0.0],
           xSpeed: diskSpeed[0],
           ySpeed: diskSpeed[1],
@@ -400,6 +310,7 @@ for (let i = 0; i < numObjects; i++) {
       u_worldViewProjection: m4.identity(),
     };
     drawObjects.push({
+        id: id,
         programInfo: programInfo,
         bufferInfo: shapes[i%shapes.length],
         uniforms: uniforms,
@@ -516,7 +427,7 @@ function render(time) {
     const eye = [1, 1, -20];
     const target = [0, 0, 0];
     const up = [0, 1, 0];
-
+    const zero = [0, 0, 0];
     g_fpsTimer.update(elapsedTime);
     fpsElem.innerHTML = g_fpsTimer.averageFPS;
 
@@ -551,7 +462,7 @@ are alive and match the clicked cods which are stored in the bugsArray.position
 as vector coordinates
 returns true if any match is found - false otherwise*/
 function bugverts(){
-  for (let i=1; i < objects.length; i++){
+  for (let i=1; i <= bugscount; i++){
     const tx = objects[i].uniforms.u_world[12];
     const ty = objects[i].uniforms.u_world[13];
     const tz = objects[i].uniforms.u_world[14];
@@ -582,12 +493,14 @@ function findClickedBug(clicked) {
         if (debug === true)
           console.log("bugxl, bugxy < size " + bugxl +", " + bugyl+"<"+bugSize);
         if ((bugxl < bugSize) && (bugyl < bugSize)) {
+              if (bugsArray[i].alive == false)
+                return false;
               bugsArray[i].alive = false;
               audioc.play();
+              deathToll(i);
               if (debug === true){
                 console.log("bug killed at vector: [" + bugx + ", " + bugy + "]");
               }
-              deathToll();
               return true;
               }
           }
