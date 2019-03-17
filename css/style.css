@@ -14,7 +14,7 @@ html, body {
 }
 a {
     color: rgb(0, 0, 0);
-   }
+}
 h4 {
     font-weight: 100;
 }
@@ -37,7 +37,7 @@ CANVAS, c, canvas  {
     width: 100%;
     text-align: center;
     z-index: 2;
-  }
+}
 
 #uiContainer {
     z-index: 2;
@@ -94,6 +94,9 @@ CANVAS, c, canvas  {
     float: left;
   }
   .bugstotal{
+    float: left;
+  }
+  .bugspawn{
     float: left;
   }
   .stime{

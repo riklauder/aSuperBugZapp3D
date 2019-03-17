@@ -11,6 +11,7 @@
     "glsl-canvas-js": "^0.1.3",
     "graceful-fs": "^4.1.15",
     "has-value": "^1.0.0",
+    "http-server": "^0.11.1",
     "inherits": "^2.0.3",
     "is-accessor-descriptor": "^0.1.6",
     "is-binary-path": "^1.0.1",
@@ -25,11 +26,16 @@
     "isobject": "^3.0.1",
     "map-cache": "^0.2.2",
     "mixin-deep": "^1.3.1",
+    "requirejs": "^2.3.6",
     "twgl.js": "^4.9.0",
     "webgl-debug": "^2.0.1",
     "webgl-utils": "^1.0.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "loadsh": "0.0.4",
+    "webpack": "^4.29.6",
+    "webpack-cli": "^3.3.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

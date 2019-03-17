@@ -20,21 +20,22 @@ var bugs = []; // array of bugs verts only
 var bugsArray = []; //local variable to store all bug data
 var btime = 0;
 var bugSize = 0.25;
-var bugSpeed = 3; // intervaúl at which bugs appear
-var bugMaxGroups = 10; //max num bugs per group
+var bugSpeed = 2; // intervaúl at which bugs appear
+var bugMaxGroups = 10; //max num bug groups
 var bugsgroup = document.getElementById("bugsgroup");
-var bugsgroupu= 10;//active bug groups in game
+var bugsgroupu= 0;//active bug groups in game
 var bugsdead = document.getElementById("bugsdead");
 var bugsdeadu = 0;//sum of killed bugs
 var bugscount=0;
+var bugspawn = document.getElementById("bugspawn");
+var bugspawnu = -1;
 var bugstotal = document.getElementById("bugstotal");
 var bugstotalu = 0;
 const numb = 159;//max bugs to display
-var clock = 0.0;
 var clx, cly;
 var clicked;
 var debug = true;
-var diskSpeed = [0.5, 0.3, 0.2];//initial movement speed for 3D disk
+var diskSpeed = [0.6, 0.4, 0.3];//initial movement speed for 3D disk
 var frameCount = 0;
 var g_fpsTimer;
 var gamescore = document.getElementById("gamescore");
@@ -57,7 +58,7 @@ g_fpsTimer = new tdl.fps.FPSTimer();
 //The master sphere vArrrayAttribBuffers
 const sphere = twgl.primitives.createSphereBufferInfo(gl, 5, 48, 24);
 //the game bugs
-const bugbuff = twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 4);
+const bugbuff = twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 3);
 
 //combine all vertex buffers
 const shapes = [];
@@ -119,6 +120,7 @@ function rand(min, max) {
 function deathToll(indx){
   bugsdeadu++;
   bugscount--;
+  bugs.pop(indx);
   bugsArray.pop(indx);
   shapes.pop(indx+1);
   objects.pop(indx+1);
@@ -133,7 +135,9 @@ function bugCount(){
     //bugstotalu -= bugsdeadu;
   }
 }
-
+function bugspawhupdate(){
+  return bugspawnu;
+}
 function stupdate(){
   return btime;
 }
@@ -144,8 +148,10 @@ function gameupdate(){
   gamescore.innerHTML = gamescoreu+bugsdeadu*10;
   bugCount();
   bugstotal.innerHTML = bugstotalu;
-  bugsgroupu = Math.ceil((bugstotalu/bugMaxGroups));
+  bugsgroupu = Math.min(bugMaxGroups, bugstotalu);
   bugsgroup.innerHTML = bugsgroupu;
+  bugspawnu=bugspawhupdate();
+  bugspawn.innerHTML = bugspawnu;
   statusu = stupdate();
   stime.innerHTML = statusu;
 }
@@ -238,15 +244,20 @@ const texb = twgl.createTexture(gl, {
   ],
   width: 1,
 });
+const baseHueb=[];
+for (i=0;i<bugMaxGroups;i++){
+  const baseHue = rand(0, 360);
+  baseHueb.push(baseHue);
+}
 
-for (let i = 0; i < numObjects; i++) {
-  const baseHueb = rand(0, 360);
+for (let i = 0; i < numb; i++) {
+  const baseHuec = rand(0, 360);
   const id = i;
   if (i === 0){
   const uniforms = {
       u_lightWorldPos: lightWorldPosition,
       u_lightColor: lightColor,
-      u_diffuseMult: chroma.hsv((baseHueb + rand(0, 60) % 360), 0.6 , 0.8 ).gl(),
+      u_diffuseMult: chroma.hsv((baseHuec + rand(0, 60) % 360), 0.6 , 0.8 ).gl(),
       //u_diffuseMult: chroma.random().hsv().gl(),
       u_specular: [1, 1, 1, 1],
       u_shininess: 100,
@@ -276,7 +287,7 @@ for (let i = 0; i < numObjects; i++) {
     const uniforms = {
       u_lightWorldPos: lightWorldPosition,
       u_lightColor: lightColor,
-      u_diffuseMult: chroma.hsv((baseHueb + rand(0, 60) % 360), 0.6 , 0.8 ).gl(),
+      u_diffuseMult: chroma.hsv((baseHueb[i%bugMaxGroups] + rand(0, 60) % 360), 0.6 , 0.8 ).gl(),
       //u_diffuseMult: chroma.random().hsv().gl(),
       u_specular: [1, 1, 1, 1],
       u_shininess: 100,
@@ -293,15 +304,18 @@ for (let i = 0; i < numObjects; i++) {
         bufferInfo: shapes[i%shapes.length],
         uniforms: uniforms,
     });
-    var switx=rand(0, 1.5);
-    var switz=-4.9;
-    if (i % 2 == 0){
-      switx=rand(-1.5,0);
-      switz = 4.9;
+    const buggrp = ((i-1)%bugMaxGroups);
+    var switz=rand(-1.0, 1.0);
+    var switx=(-4.9);
+    var swity=Math.sin(Math.PI*buggrp);
+    if (buggrp % 2 == 0){
+      switx=rand(-1.0, 1.0);
+      switz =(-4.9);
+      var swity=Math.sin(Math.PI*buggrp);
       }
     objects.push({
           //translation: [rand(-10, 10), rand(-10, 10), rand(-10, 10)],
-          translation: [switx, rand(-1.5, 1.5), switz],
+          translation: [switx, swity, switz],
           xSpeed: diskSpeed[0],
           ySpeed: diskSpeed[1],
           zSpeed: diskSpeed[2],
@@ -382,7 +396,7 @@ function render(time) {
     if (frameCount % 60 === 0){
         btime += 1;
         if (btime % bugSpeed == 0)
-          bugscount = Math.min(((btime / bugSpeed)-bugsdeadu), numObjects);
+          bugscount = Math.floor((btime / bugSpeed)-bugsdeadu);
     }
     var now = (new Date()).getTime() * 0.001;
     var elapsedTime;
@@ -392,7 +406,6 @@ function render(time) {
         elapsedTime = now - then;
     }
     then = now;
-    clock += elapsedTime;
     c.onmousedown = handleMouseDown;
     //eye speed 1/10 of elapsed time
     twgl.resizeCanvasToDisplaySize(gl.canvas);
@@ -413,8 +426,10 @@ function render(time) {
     m4.inverse(camera, view);
     m4.multiply(projection, view, viewProjection);
     
-    if (r.length <= bugscount)
-          r.push(objects[bugscount]);
+    if (r.length <= bugscount){
+      r.push(objects[bugscount]);
+      bugspawnu+=1;
+    }
     
     r.forEach(function(obj){
       const uni = obj.uniforms;
@@ -471,19 +486,17 @@ function findClickedBug(clicked) {
         if (debug === true)
           console.log("bugxl, bugxy[ "+i+"]" + bugxl +", " + bugyl+"<"+bugSize);
         if ((bugxl < bugSize) && (bugyl < bugSize)) {
-              //if (bugsArray[i].alive == false)
-                //return false;
-              //bugsArray[i].alive = false;
-              audioc.play();
-              deathToll(i);
-              if (debug === true){
-                console.log("bug["+i+"] killed at vector: [" + bugx + ", " + bugy + "]");
-              }
-              return true;
-              }
+            //if (bugsArray[i].alive == false)
+              //return false;
+            //bugsArray[i].alive = false;
+            audioc.play();
+            deathToll(i);
+            if (debug === true){
+              console.log("bug["+i+"] killed at vector: [" + bugx + ", " + bugy + "]");
+            }
           }
-      }
-  return false;
+        }
+    }
 }
 
 /*handlemouse down uses canvas click event x-y coordinates
