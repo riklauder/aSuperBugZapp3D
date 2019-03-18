@@ -160,7 +160,7 @@ function gameupdate(){
 }
 
 // Shared values
-const lightWorldPosition = [1, 8, -10];
+const lightWorldPosition = [5, 8, -10];
 const lightColor = [1, 1, 1, 1];
 const camera = m4.identity();
 const view = m4.identity();
@@ -447,8 +447,7 @@ function render(time) {
     m4.multiply(projection, view, viewProjection);
     
     if (r.length <= bugscount){
-      r.push(objects[bugscount]);
-      bugspawnu+=1;
+      r.push(objects[bugspawnu+1]);
     }
     
     r.forEach(function(obj){
@@ -462,8 +461,10 @@ function render(time) {
       m4.transpose(m4.inverse(world, uni.u_worldInverseTranspose), uni.u_worldInverseTranspose);
       m4.multiply(viewProjection, uni.u_world, uni.u_worldViewProjection);
       });
-    if (drawRenders.length <= bugscount)
-      drawRenders.push(drawObjects[bugscount]);
+    if (drawRenders.length <= bugscount){
+      drawRenders.push(drawObjects[bugspawnu+1]);
+      bugspawnu+=1;
+    }
     twgl.drawObjectList(gl, drawRenders);
     requestAnimationFrame(render);
     c.onmousedown = handleMouseDown;
@@ -484,7 +485,7 @@ function bugverts(){
     const bugi = i-1;
     //console.log( "w:"+ tw);
     bugsArray[i-1].position[0] = (tx/tz)/(-9/tz);
-    bugsArray[i-1].position[1] = (ty/tz)/(4.5/tz);
+    bugsArray[i-1].position[1] = (ty/tz)/(4.9/tz);
     bugsArray[i-1].position[2] = tz;
     if (debug === true){
       console.log("bug["+bugi+"] x:"+bugsArray[i-1].position[0]+" y:"+bugsArray[i-1].position[1]+
