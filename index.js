@@ -1,27 +1,28 @@
-/*uncomment for project goto nav and lint - comment before run*/
+/*uncommeny for project nav and lint - comment for run*/
 //import * as twgl from './node_modules/twgl.js/dist/4.x/twgl-full.js';
-
-if (!window.Float32Array) {
-  // This makes errors go away when there is no WebGL.
-  window.Float32Array = function() {};
-}
+//import { StringDecoder } from 'string_decoder';
 /*eslint-disable no-undef*/
 /*global some_unused_var*/
 /*eslint-disable nonblock-statement-body-position*/
-const tdlbase = 'tdl.base';
+tdl.require('tdl.base');
 const tdlfps = 'tdl.fps';
 const tdlfast = 'tdl.fast';
-tdl.require(tdlbase);
+const tdlprim = 'tdl.primitives';
 tdl.require(tdlfps);
 tdl.require(tdlfast);
+tdl.require(tdlprim);
 
+if (!window.Float32Array) {
+    // This makes errors go away when there is no WebGL.
+    window.Float32Array = function() {};
+}
 /*globals*/
 var bugs = []; // array of bugs verts only
 var bugsArray = []; //local variable to store all bug data
 var btime = 0;
 var bugSize = 0.25;
-var bugSpeed = 2; // intervaúl at which bugs appear
-var bugMaxGroups = 10; //max num bug groups
+var bugSpeed = 2; // interval at which bugs appear
+var bugMaxGroups = 6; //max num bug groups
 var bugsgroup = document.getElementById("bugsgroup");
 var bugsgroupu= 0;//active bug groups in game
 var bugsdead = document.getElementById("bugsdead");
@@ -31,15 +32,15 @@ var bugspawn = document.getElementById("bugspawn");
 var bugspawnu = -1;
 var bugstotal = document.getElementById("bugstotal");
 var bugstotalu = 0;
-const numb = 159;//max bugs to display
+const numb = 400;//max bugs to buffer
 var clx, cly;
 var clicked;
 var debug = true;
-var diskSpeed = [0.4, 0.6, 0.3];//initial movement speed for 3D disk
+var diskSpeed = [0.6, 0.2, 0.1];//initial movement speed for 3D disk
 var frameCount = 0;
 var g_fpsTimer;
 var gamescore = document.getElementById("gamescore");
-var gamescoreu = 0;
+var gamescoreu = 200;
 var stime = document.getElementById("stime");
 var statusu = 0;
 
@@ -144,7 +145,7 @@ function stupdate(){
 
 function gameupdate(){
   bugsdead.innerHTML = bugsdeadu;
-  gamescoreu=btime;
+  gamescoreu=200-bugspawnu;
   gamescore.innerHTML = gamescoreu+bugsdeadu*10;
   bugCount();
   bugstotal.innerHTML = bugstotalu;
@@ -154,6 +155,8 @@ function gameupdate(){
   bugspawn.innerHTML = bugspawnu;
   statusu = stupdate();
   stime.innerHTML = statusu;
+  if (btime == 45) 
+    bugSpeed=1;
 }
 
 // Shared values
@@ -187,7 +190,6 @@ const tex = twgl.createTexture(gl, {
 
 const objects = [];
 const drawObjects = [];
-const numObjects = 100;
 /*
 function msphere(){
     const baseHue = rand(0, 360);
@@ -232,15 +234,15 @@ const texb = twgl.createTexture(gl, {
   min: gl.LINEAR,
   format: gl.LUMINANCE,
   src: [
-    128, 255,128, 255,128, 255,128, 255,
-    255, 128,255, 128,255, 128,255, 128,
-    128, 255,128, 255,128, 255,128, 255,
-    255, 128,255, 128,255, 128,255, 128,
-    128, 255,128, 255,128, 255,128, 255,
-    255, 128,255, 128,255, 128,255, 128,
-    128, 255,128, 255,128, 255,128, 255,
-    255, 128,255, 128,255, 128,255, 128,
-    128, 255,128, 255,128, 255,128, 255, 
+    128, 255,128, 255,
+    255, 128,255, 128,
+    128, 255,128, 255,
+    255, 128,255, 128,
+    128, 255,128, 255,
+    255, 128,255, 128,
+    128, 255,128, 255,
+    255, 128,255, 128,
+    128, 255,128, 255, 
   ],
   width: 1,
 });
@@ -305,17 +307,30 @@ for (let i = 0; i < numb; i++) {
         uniforms: uniforms,
     });
     const buggrp = ((i-1)%bugMaxGroups);
-    var switz=rand(-1.0, 1.0);
+    var switz=rand(-1.5,1.5);
     var switx=(-4.9);
-    var swity=rand(0.1*buggrp, (-0.1*buggrp));
-    if (buggrp % 2 == 0){
-      switx=rand(-1.0, 1.0);
+    var swity=rand(-1.0,1.0);
+    if (buggrp == 1){
+      switx=rand(-1.5, 1.5);
       switz =(-4.9);
       }
-    if (buggrp % 3 == 0){
-      switx=switz;
-      switz=swity;
-      swity =(4.9/3.3);
+    if (buggrp == 2){
+      switx=rand(-1.5, 1.5);
+      swity =(-4.9);
+      switz=rand(-1.0/1.0);
+      }
+    if (buggrp == 3){
+      var switz=rand(-1.5, 1.5);
+      var switx=(4.9);
+    }
+    if (buggrp == 4){
+      switx=rand(-1.5, 1.5);
+      switz =(4.9);
+      }
+    if (buggrp == 5){
+      switx=rand(-1.5, 1.5);
+      swity =(4.9);
+      var switz=rand(-1.0,1.0);
       }
     objects.push({
           //translation: [rand(-10, 10), rand(-10, 10), rand(-10, 10)],
@@ -325,11 +340,9 @@ for (let i = 0; i < numb; i++) {
           zSpeed: diskSpeed[2],
           uniforms: uniforms,
       });
-    let alive = true;
     let position = [objects[i].translation[0], objects[i].translation[1]];
     let bug = {};
     bug.position = position;
-    bug.alive = alive;
     bug.ySpeed =objects[i].ySpeed;
     bug.zSpeed =objects[i].zSpeed;
     bugs.push(position);
@@ -401,6 +414,10 @@ function render(time) {
         btime += 1;
         if (btime % bugSpeed == 0)
           bugscount = Math.floor((btime / bugSpeed)-bugsdeadu);
+        if (btime > 60)
+          bugscount += (btime -60);
+        if (btime > 90)
+          bugscount += (btime-85);
     }
     var now = (new Date()).getTime() * 0.001;
     var elapsedTime;
@@ -410,7 +427,6 @@ function render(time) {
         elapsedTime = now - then;
     }
     then = now;
-    c.onmousedown = handleMouseDown;
     //eye speed 1/10 of elapsed time
     twgl.resizeCanvasToDisplaySize(gl.canvas);
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
@@ -450,6 +466,7 @@ function render(time) {
       drawRenders.push(drawObjects[bugscount]);
     twgl.drawObjectList(gl, drawRenders);
     requestAnimationFrame(render);
+    c.onmousedown = handleMouseDown;
     gameupdate();
 }
 requestAnimationFrame(render);
@@ -467,7 +484,7 @@ function bugverts(){
     const bugi = i-1;
     //console.log( "w:"+ tw);
     bugsArray[i-1].position[0] = (tx/tz)/(-9/tz);
-    bugsArray[i-1].position[1] = (ty/tz)/(5/tz);
+    bugsArray[i-1].position[1] = (ty/tz)/(4.5/tz);
     bugsArray[i-1].position[2] = tz;
     if (debug === true){
       console.log("bug["+bugi+"] x:"+bugsArray[i-1].position[0]+" y:"+bugsArray[i-1].position[1]+
