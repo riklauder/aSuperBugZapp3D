@@ -1,20 +1,20 @@
-/*uncommeny for project nav and lint - comment for run*/
+/*uncomment for project goto nav and lint - comment before run*/
 //import * as twgl from './node_modules/twgl.js/dist/4.x/twgl-full.js';
-//import { StringDecoder } from 'string_decoder';
+
+if (!window.Float32Array) {
+  // This makes errors go away when there is no WebGL.
+  window.Float32Array = function() {};
+}
 /*eslint-disable no-undef*/
 /*global some_unused_var*/
 /*eslint-disable nonblock-statement-body-position*/
+const tdlbase = 'tdl.base';
 const tdlfps = 'tdl.fps';
 const tdlfast = 'tdl.fast';
-const tdlprim = 'tdl.primitives';
+tdl.require(tdlbase);
 tdl.require(tdlfps);
 tdl.require(tdlfast);
-tdl.require(tdlprim);
 
-if (!window.Float32Array) {
-    // This makes errors go away when there is no WebGL.
-    window.Float32Array = function() {};
-}
 /*globals*/
 var bugs = []; // array of bugs verts only
 var bugsArray = []; //local variable to store all bug data
@@ -35,7 +35,7 @@ const numb = 159;//max bugs to display
 var clx, cly;
 var clicked;
 var debug = true;
-var diskSpeed = [0.6, 0.4, 0.3];//initial movement speed for 3D disk
+var diskSpeed = [0.4, 0.6, 0.3];//initial movement speed for 3D disk
 var frameCount = 0;
 var g_fpsTimer;
 var gamescore = document.getElementById("gamescore");
@@ -307,11 +307,15 @@ for (let i = 0; i < numb; i++) {
     const buggrp = ((i-1)%bugMaxGroups);
     var switz=rand(-1.0, 1.0);
     var switx=(-4.9);
-    var swity=Math.sin(Math.PI*buggrp);
+    var swity=rand(0.1*buggrp, (-0.1*buggrp));
     if (buggrp % 2 == 0){
       switx=rand(-1.0, 1.0);
       switz =(-4.9);
-      var swity=Math.sin(Math.PI*buggrp);
+      }
+    if (buggrp % 3 == 0){
+      switx=switz;
+      switz=swity;
+      swity =(4.9/3.3);
       }
     objects.push({
           //translation: [rand(-10, 10), rand(-10, 10), rand(-10, 10)],
