@@ -21,7 +21,7 @@ var bugs = []; // array of bugs verts only
 var bugsArray = []; //local variable to store all bug data
 var btime = 0;
 var bugSize = 0.25;
-var bugSpeed = 2; // interval at which bugs appear
+var bugSpeed = 3; // interval at which bugs appear
 var bugMaxGroups = 6; //max num bug groups
 var bugsgroup = document.getElementById("bugsgroup");
 var bugsgroupu= 0;//active bug groups in game
@@ -32,15 +32,17 @@ var bugspawn = document.getElementById("bugspawn");
 var bugspawnu = -1;
 var bugstotal = document.getElementById("bugstotal");
 var bugstotalu = 0;
-const numb = 400;//max bugs to buffer
+const numb = 500;//max bugs to buffer
 var clx, cly;
 var clicked;
 var debug = true;
-var diskSpeed = [0.6, 0.2, 0.1];//initial movement speed for 3D disk
+var diskSpeed = [0.05, 0.2, 0.2];//initial movement speed for 3D disk
 var frameCount = 0;
 var g_fpsTimer;
 var gamescore = document.getElementById("gamescore");
 var gamescoreu = 200;
+var light = 1;//toggle 0 is on 1 is off
+const lightColor = [[0.0, 0.0, 0.0, 1.0],[1.0, 1.0, 1.0, 1.0]];
 var stime = document.getElementById("stime");
 var statusu = 0;
 
@@ -159,9 +161,30 @@ function gameupdate(){
     bugSpeed=1;
 }
 
-// Shared values
+// Shared Or Updated values
+/**
+ * Sets lighting on or off
+ */
+function setLighing() {
+  if (light==0)
+    light = 1;
+  else
+   light=0;
+  }
+
+function flipVert(){
+  if (diskSpeed[2] < 0.5)
+    diskSpeed[2] += 0.05;
+  else diskSpeed[2]=0.1;
+}
+
+function flipHor(){
+  if (diskSpeed[1] < 0.5)
+    diskSpeed[1] += 0.05;
+  else diskSpeed[1]=0.1;
+}
+
 const lightWorldPosition = [5, 8, -10];
-const lightColor = [1, 1, 1, 1];
 const camera = m4.identity();
 const view = m4.identity();
 const viewProjection = m4.identity();
@@ -234,15 +257,15 @@ const texb = twgl.createTexture(gl, {
   min: gl.LINEAR,
   format: gl.LUMINANCE,
   src: [
-    128, 255,128, 255,
-    255, 128,255, 128,
-    128, 255,128, 255,
-    255, 128,255, 128,
-    128, 255,128, 255,
-    255, 128,255, 128,
-    128, 255,128, 255,
-    255, 128,255, 128,
-    128, 255,128, 255, 
+    128, 255,128, 255,255,
+    128, 128,255, 128,255,
+    128, 255,255, 128,255,
+    128, 255,255, 255,255,
+    128, 255,128, 255,255,
+    128, 128,255, 128,255,
+    128, 128,128, 128,255,
+    128, 128,255, 128,255,
+    128, 128,128, 128,128, 
   ],
   width: 1,
 });
@@ -258,7 +281,7 @@ for (let i = 0; i < numb; i++) {
   if (i === 0){
   const uniforms = {
       u_lightWorldPos: lightWorldPosition,
-      u_lightColor: lightColor,
+      u_lightColor: lightColor[light],
       u_diffuseMult: chroma.hsv((baseHuec + rand(0, 60) % 360), 0.6 , 0.8 ).gl(),
       //u_diffuseMult: chroma.random().hsv().gl(),
       u_specular: [1, 1, 1, 1],
@@ -274,7 +297,7 @@ for (let i = 0; i < numb; i++) {
       programInfo: programInfo,
       bufferInfo: shapes[i%shapes.length],
       uniforms: uniforms,
-  });
+      });
     objects.push({
           //translation: [rand(-10, 10), rand(-10, 10), rand(-10, 10)],
           id: id,
@@ -288,7 +311,7 @@ for (let i = 0; i < numb; i++) {
   if (i > 0) {
     const uniforms = {
       u_lightWorldPos: lightWorldPosition,
-      u_lightColor: lightColor,
+      u_lightColor: lightColor[light],
       u_diffuseMult: chroma.hsv((baseHueb[i%bugMaxGroups] + rand(0, 60) % 360), 0.6 , 0.8 ).gl(),
       //u_diffuseMult: chroma.random().hsv().gl(),
       u_specular: [1, 1, 1, 1],
@@ -308,7 +331,7 @@ for (let i = 0; i < numb; i++) {
     });
     const buggrp = ((i-1)%bugMaxGroups);
     var switz=rand(-1.5,1.5);
-    var switx=(-4.9);
+    var switx=(4.9);
     var swity=rand(-1.0,1.0);
     if (buggrp == 1){
       switx=rand(-1.5, 1.5);
@@ -316,12 +339,12 @@ for (let i = 0; i < numb; i++) {
       }
     if (buggrp == 2){
       switx=rand(-1.5, 1.5);
-      swity =(-4.9);
+      swity =(4.9);
       switz=rand(-1.0/1.0);
       }
     if (buggrp == 3){
       var switz=rand(-1.5, 1.5);
-      var switx=(4.9);
+      var switx=(-4.9);
     }
     if (buggrp == 4){
       switx=rand(-1.5, 1.5);
@@ -329,7 +352,7 @@ for (let i = 0; i < numb; i++) {
       }
     if (buggrp == 5){
       switx=rand(-1.5, 1.5);
-      swity =(4.9);
+      swity =(-4.9);
       var switz=rand(-1.0,1.0);
       }
     objects.push({
@@ -401,7 +424,9 @@ objects = [
     bugsNode,
   ];
 */
-
+document.getElementById("lightb").onclick = function(){setLighing();};
+document.getElementById("flipvert").onclick = function(){flipVert();};
+document.getElementById("fliphor").onclick = function(){flipHor();};
 const r = [];
 const drawRenders= [];
 /*RENDER TIME - 3of3 -ear and set the viewport and other global state
@@ -435,7 +460,8 @@ function render(time) {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     const projection = m4.perspective(30 * Math.PI / 180, gl.canvas.clientWidth / gl.canvas.clientHeight, 0.5, 100);
-    const eye = [1, 1, -20];
+    const eye= [1, 1, -20];
+    const eyer = [-1, -1, 20];
     const target = [0, 0, 0];
     const up = [0, 1, 0];
     const zero = [0, 0, 0];
@@ -443,6 +469,8 @@ function render(time) {
     fpsElem.innerHTML = g_fpsTimer.averageFPS;
 
     m4.lookAt(eye, target, up, camera);
+    if (light == 0)
+    m4.lookAt(eyer, target, up, camera);
     m4.inverse(camera, view);
     m4.multiply(projection, view, viewProjection);
     
@@ -454,8 +482,8 @@ function render(time) {
       const uni = obj.uniforms;
       const world = uni.u_world;
       m4.identity(world);
-      m4.rotateY(world, time * obj.ySpeed, world);
-      m4.rotateZ(world, time * obj.zSpeed, world);
+      m4.rotateY(world, time * diskSpeed[1], world);
+      m4.rotateZ(world, time * diskSpeed[2], world);
       m4.translate(world, obj.translation, world);
       m4.rotateX(world, obj.xSpeed, world);
       m4.transpose(m4.inverse(world, uni.u_worldInverseTranspose), uni.u_worldInverseTranspose);
@@ -484,7 +512,7 @@ function bugverts(){
     const tw = tx + ty + tz;
     const bugi = i-1;
     //console.log( "w:"+ tw);
-    bugsArray[i-1].position[0] = (tx/tz)/(-9/tz);
+    bugsArray[i-1].position[0] = (tx/tz)/(-9.8/tz);
     bugsArray[i-1].position[1] = (ty/tz)/(4.9/tz);
     bugsArray[i-1].position[2] = tz;
     if (debug === true){

@@ -50,12 +50,12 @@ CANVAS, c, canvas  {
     font-size: xx-small;
     border-radius: 10px;
     padding: 10px;
-  }
+}
 
-  #advanced {
+#advanced {
     color: gray;
-  }
-  #fpsContainer {
+}
+#fpsContainer {
     position: absolute;
     top: 10px;
     left: 20px;
@@ -64,11 +64,24 @@ CANVAS, c, canvas  {
     background-color: rgba(0,0,0,0.5);
     border-radius: 10px;
     padding: 10px;
-  }
-  .fpsInner {
+}
+.fpsContainer {
+    position: absolute;
+    top: 10px;
+    left: 20px;
+    z-index: 2;
+    color: white;
+    background-color: rgba(0,0,0,0.5);
+    border-radius: 10px;
+    padding: 10px;
+}
+.fpsInner {
     clear: both;    
-  }
-  #gameData{
+}
+div.title {
+    font-weight: bold;
+}
+#gameData{
     position: absolute;
     top: 10px;
     right: 20px;
@@ -77,48 +90,48 @@ CANVAS, c, canvas  {
     background-color: rgba(0,0,0,0.5);
     border-radius: 10px;
     padding: 10px;
-  }
-  .gameInner {
+}
+.gameInner {
     clear: both;    
-  }
-  .game{
+}
+.game{
     flex: left;
-  }
-  .gamescore{
+}
+.gamescore{
     float: left;
-  }
-  .bugsdead{
+}
+.bugsdead{
     float: left;
-  }
-  .bugsgroup{
+}
+.bugsgroup{
     float: left;
-  }
-  .bugstotal{
+}
+.bugstotal{
     float: left;
-  }
-  .bugspawn{
+}
+.bugspawn{
     float: left;
-  }
-  .stime{
+}
+.stime{
     float: left;
-  }
-  .clickable {
+}
+.clickable {
     cursor: pointer;
-  }
-  .clear {
+}
+.clear {
     clear: both;
-  }
-  #viewContainer {
+}
+#viewContainer {
     width: 100%;
     height: 100%;
-  }
+}
 
-  .examples {
+.examples {
     display: flex;
     flex-direction: row;
     justify-content: center;
     flex-wrap: wrap;
-  }
+}
 .example {
     width: 320px;
     height: auto;
@@ -126,7 +139,7 @@ CANVAS, c, canvas  {
     flex: 0 0 320px;
 }
 
-  .fps {
+.fps {
     float: left;
 }
 .icon {
@@ -338,6 +351,7 @@ h1 {
     width: 600px;
     margin: 5px;
     float: left;
+    background-color: #FFEE99;
 }
 
 .controls button, .controls input {
@@ -391,8 +405,8 @@ a:link, a:visited {
 #viewContainer {
     width: 100%;
     height: 100%;
-  }
-  
+}
+
 .glsl-canvas {
 	width: 100%;
     height: 100%;
