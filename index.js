@@ -7,10 +7,10 @@
 tdl.require('tdl.base');
 const tdlfps = 'tdl.fps';
 const tdlfast = 'tdl.fast';
-const tdlprim = 'tdl.primitives';
+const tdlfull = 'tdl.fullscreen';
 tdl.require(tdlfps);
 tdl.require(tdlfast);
-tdl.require(tdlprim);
+tdl.require(tdlfull);
 
 if (!window.Float32Array) {
     // This makes errors go away when there is no WebGL.
@@ -35,8 +35,8 @@ var bugstotalu = 0;
 const numb = 500;//max bugs to buffer
 var clx, cly;
 var clicked;
-var debug = true;
-var diskSpeed = [0.05, 0.2, 0.2];//initial movement speed for 3D disk
+var debug = false;
+var diskSpeed = [0, (Math.PI/2)/60, (2*Math.PI)/60];//initial movement speed for 3D disk
 var frameCount = 0;
 var g_fpsTimer;
 var gamescore = document.getElementById("gamescore");
@@ -61,7 +61,7 @@ g_fpsTimer = new tdl.fps.FPSTimer();
 //The master sphere vArrrayAttribBuffers
 const sphere = twgl.primitives.createSphereBufferInfo(gl, 5, 48, 24);
 //the game bugs
-const bugbuff = twgl.primitives.createSphereBufferInfo(gl, bugSize, 6, 3);
+const bugbuff = twgl.primitives.createSphereBufferInfo(gl, bugSize, 5, 5);
 
 //combine all vertex buffers
 const shapes = [];
@@ -119,6 +119,10 @@ function rand(min, max) {
     }
     return min + Math.random() * (max - min);
 }
+/*get Rad for rotations*/
+function degToRad(d) {
+  return d * Math.PI / 180;
+}
 
 function deathToll(indx){
   bugsdeadu++;
@@ -172,19 +176,32 @@ function setLighing() {
    light=0;
   }
 
+var zinc=true;
 function flipVert(){
-  if (diskSpeed[2] < 0.5)
-    diskSpeed[2] += 0.05;
-  else diskSpeed[2]=0.1;
+  if (zinc==true && diskSpeed[2] < 0.5)
+    diskSpeed[2] += degToRad(20)/60;
+  else
+    zinc = false;
+  if (zinc==false && diskSpeed[2] > -0.5)
+    diskSpeed[2] -= degToRad(20)/60;
+  else
+    zinc = true;
 }
 
+
+var yinc=true;
 function flipHor(){
-  if (diskSpeed[1] < 0.5)
-    diskSpeed[1] += 0.05;
-  else diskSpeed[1]=0.1;
+  if (yinc==true && diskSpeed[1] < 0.5)
+    diskSpeed[1] += degToRad(20)/60;
+  else
+    yinc = false;
+  if (yinc==false && diskSpeed[1] > -0.5)
+    diskSpeed[1] -= degToRad(20)/60;
+  else
+    yinc = true;
 }
 
-const lightWorldPosition = [5, 8, -10];
+const lightWorldPosition = [3, 9, -16];
 const camera = m4.identity();
 const view = m4.identity();
 const viewProjection = m4.identity();
@@ -192,10 +209,10 @@ var fpsElem = document.getElementById("fps");
 
 const tex = twgl.createTexture(gl, {
     /*Applies beach ball or stripe like texture so that spehere and bug
-     animation can be seen better through lighting effect
-     for beachball change to m4*/ 
+    animation can be seen better through lighting effect
+    for beachball change to m4*/ 
     mag: gl.NEAREST,
-    min: gl.LINEAR,
+    min: gl.NEAREST,
     format: gl.LUMINANCE,
     src: [
       128, 
@@ -253,16 +270,16 @@ function msphere(){
 
 const texb = twgl.createTexture(gl, {
   //Applies bug lined textures*
-  mag: gl.NEAREST,
+  mag: gl.LINEAR,
   min: gl.LINEAR,
-  format: gl.LUMINANCE,
+  format: gl.RGB,
   src: [
     128, 255,128, 255,255,
     128, 128,255, 128,255,
-    128, 255,255, 128,255,
+    128, 100,100, 100,255,
     128, 255,255, 255,255,
     128, 255,128, 255,255,
-    128, 128,255, 128,255,
+    128, 100,100, 128,255,
     128, 128,128, 128,255,
     128, 128,255, 128,255,
     128, 128,128, 128,128, 
@@ -330,28 +347,28 @@ for (let i = 0; i < numb; i++) {
         uniforms: uniforms,
     });
     const buggrp = ((i-1)%bugMaxGroups);
-    var switz=rand(-1.5,1.5);
+    var switz=rand(-1.6,1.6);
     var switx=(4.9);
     var swity=rand(-1.0,1.0);
     if (buggrp == 1){
-      switx=rand(-1.5, 1.5);
+      switx=rand(-1.6, 1.6);
       switz =(-4.9);
       }
     if (buggrp == 2){
-      switx=rand(-1.5, 1.5);
+      switx=rand(-1.6, 1.6);
       swity =(4.9);
       switz=rand(-1.0/1.0);
       }
     if (buggrp == 3){
-      var switz=rand(-1.5, 1.5);
+      var switz=rand(-1.6, 1.6);
       var switx=(-4.9);
     }
     if (buggrp == 4){
-      switx=rand(-1.5, 1.5);
+      switx=rand(-1.6, 1.6);
       switz =(4.9);
       }
     if (buggrp == 5){
-      switx=rand(-1.5, 1.5);
+      switx=rand(-1.6, 1.6);
       swity =(-4.9);
       var switz=rand(-1.0,1.0);
       }
@@ -459,18 +476,20 @@ function render(time) {
     gl.enable(gl.DEPTH_TEST);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    const projection = m4.perspective(30 * Math.PI / 180, gl.canvas.clientWidth / gl.canvas.clientHeight, 0.5, 100);
+    //const projection = m4.ortho(-1,1,-1,1,10,-10);
+    const projection = m4.perspective(degToRad(30), gl.canvas.clientWidth / gl.canvas.clientHeight, 0.5, 100);
     const eye= [1, 1, -20];
     const eyer = [-1, -1, 20];
     const target = [0, 0, 0];
     const up = [0, 1, 0];
+    const down = [0, -1, 0];
     const zero = [0, 0, 0];
     g_fpsTimer.update(elapsedTime);
     fpsElem.innerHTML = g_fpsTimer.averageFPS;
 
     m4.lookAt(eye, target, up, camera);
     if (light == 0)
-    m4.lookAt(eyer, target, up, camera);
+      m4.lookAt(eyer, target, down, camera);
     m4.inverse(camera, view);
     m4.multiply(projection, view, viewProjection);
     
@@ -482,10 +501,10 @@ function render(time) {
       const uni = obj.uniforms;
       const world = uni.u_world;
       m4.identity(world);
-      m4.rotateY(world, time * diskSpeed[1], world);
-      m4.rotateZ(world, time * diskSpeed[2], world);
+      m4.rotateY(world, time*diskSpeed[1], world);
+      m4.rotateZ(world, time*diskSpeed[2], world);
       m4.translate(world, obj.translation, world);
-      m4.rotateX(world, obj.xSpeed, world);
+      m4.rotateX(world, diskSpeed[0], world);
       m4.transpose(m4.inverse(world, uni.u_worldInverseTranspose), uni.u_worldInverseTranspose);
       m4.multiply(viewProjection, uni.u_world, uni.u_worldViewProjection);
       });
@@ -535,15 +554,13 @@ function findClickedBug(clicked) {
         const bugyl = (Math.abs(clicked[1] - bugy));
         if (debug === true)
           console.log("bugxl, bugxy[ "+i+"]" + bugxl +", " + bugyl+"<"+bugSize);
-        if ((bugxl < bugSize) && (bugyl < bugSize)) {
+        if ((bugxl < bugSize+0.1) && (bugyl < bugSize+0.1)) {
             //if (bugsArray[i].alive == false)
               //return false;
             //bugsArray[i].alive = false;
             audioc.play();
-            deathToll(i);
-            if (debug === true){
-              console.log("bug["+i+"] killed at vector: [" + bugx + ", " + bugy + "]");
-            }
+            deathToll(i); 
+            console.log("bug["+i+"] killed at vector: [" + bugx + ", " + bugy + "]");
           }
         }
     }
