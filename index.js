@@ -1,5 +1,5 @@
 /*uncommeny for project nav and lint - comment for run*/
-//import * as twgl from './node_modules/twgl.js/dist/4.x/twgl-full.js';
+import * as twgl from './node_modules/twgl.js/dist/4.x/twgl-full.js';
 //import { StringDecoder } from 'string_decoder';
 /*eslint-disable no-undef*/
 /*global some_unused_var*/
@@ -20,7 +20,7 @@ if (!window.Float32Array) {
 var bugs = []; // array of bugs verts only
 var bugsArray = []; //local variable to store all bug data
 var btime = 0;
-var bugSize = 0.25;
+var bugSize = 0.24;
 var bugSpeed = 3; // interval at which bugs appear
 var bugMaxGroups = 6; //max num bug groups
 var bugsgroup = document.getElementById("bugsgroup");
@@ -35,9 +35,11 @@ var bugstotalu = 0;
 const numb = 500;//max bugs to buffer
 var clx, cly;
 var clicked;
-var debug = false;
-var diskSpeed = [0, (Math.PI/2)/60, (2*Math.PI)/60];//initial movement speed for 3D disk
+var debug = true;
+var debugverbose = false;
+var diskSpeed = [2*(Math.PI)/60, (Math.PI/2)/60, 0.005];//initial movement speed for 3D disk
 var frameCount = 0;
+var fast;
 var g_fpsTimer;
 var gamescore = document.getElementById("gamescore");
 var gamescoreu = 200;
@@ -61,7 +63,7 @@ g_fpsTimer = new tdl.fps.FPSTimer();
 //The master sphere vArrrayAttribBuffers
 const sphere = twgl.primitives.createSphereBufferInfo(gl, 5, 48, 24);
 //the game bugs
-const bugbuff = twgl.primitives.createSphereBufferInfo(gl, bugSize, 5, 5);
+const bugbuff = twgl.primitives.createSphereBufferInfo(gl, bugSize, 5,6);
 
 //combine all vertex buffers
 const shapes = [];
@@ -129,11 +131,11 @@ function deathToll(indx){
   bugscount--;
   bugs.pop(indx);
   bugsArray.pop(indx);
-  shapes.pop(indx+1);
-  objects.pop(indx+1);
+  //shapes.pop(indx+1);
+  //objects.pop(indx+1);
   r.pop(indx+1);
   drawRenders.pop(indx+1);
-  drawObjects.pop(indx+1);
+  //drawObjects.pop(indx+1);
 }
 
 function bugCount(){
@@ -176,29 +178,25 @@ function setLighing() {
    light=0;
   }
 
-var zinc=true;
+
 function flipVert(){
-  if (zinc==true && diskSpeed[2] < 0.5)
-    diskSpeed[2] += degToRad(20)/60;
-  else
-    zinc = false;
-  if (zinc==false && diskSpeed[2] > -0.5)
-    diskSpeed[2] -= degToRad(20)/60;
-  else
-    zinc = true;
+  if (diskSpeed[0] < 0.5)
+    diskSpeed[0] += degToRad(15)/60;
+
 }
 
+function flipVertd(){
+  if (diskSpeed[0] > -0.5)
+    diskSpeed[0] -= degToRad(15)/60;
+}
 
-var yinc=true;
 function flipHor(){
-  if (yinc==true && diskSpeed[1] < 0.5)
-    diskSpeed[1] += degToRad(20)/60;
-  else
-    yinc = false;
-  if (yinc==false && diskSpeed[1] > -0.5)
-    diskSpeed[1] -= degToRad(20)/60;
-  else
-    yinc = true;
+  if (diskSpeed[1] < 0.5)
+    diskSpeed[1] += degToRad(15)/60;
+}
+function flipHord(){
+  if (diskSpeed[1] > -0.5)
+    diskSpeed[1] -= degToRad(15)/60;
 }
 
 const lightWorldPosition = [3, 9, -16];
@@ -444,6 +442,8 @@ objects = [
 document.getElementById("lightb").onclick = function(){setLighing();};
 document.getElementById("flipvert").onclick = function(){flipVert();};
 document.getElementById("fliphor").onclick = function(){flipHor();};
+document.getElementById("flipvertd").onclick = function(){flipVertd();};
+document.getElementById("fliphord").onclick = function(){flipHord();};
 const r = [];
 const drawRenders= [];
 /*RENDER TIME - 3of3 -ear and set the viewport and other global state
@@ -479,7 +479,7 @@ function render(time) {
     //const projection = m4.ortho(-1,1,-1,1,10,-10);
     const projection = m4.perspective(degToRad(30), gl.canvas.clientWidth / gl.canvas.clientHeight, 0.5, 100);
     const eye= [1, 1, -20];
-    const eyer = [-1, -1, 20];
+    const eyer = [-1, 1, 20];
     const target = [0, 0, 0];
     const up = [0, 1, 0];
     const down = [0, -1, 0];
@@ -501,10 +501,10 @@ function render(time) {
       const uni = obj.uniforms;
       const world = uni.u_world;
       m4.identity(world);
+      m4.rotateX(world, time *diskSpeed[0], world);
       m4.rotateY(world, time*diskSpeed[1], world);
       m4.rotateZ(world, time*diskSpeed[2], world);
       m4.translate(world, obj.translation, world);
-      m4.rotateX(world, diskSpeed[0], world);
       m4.transpose(m4.inverse(world, uni.u_worldInverseTranspose), uni.u_worldInverseTranspose);
       m4.multiply(viewProjection, uni.u_world, uni.u_worldViewProjection);
       });
@@ -534,7 +534,7 @@ function bugverts(){
     bugsArray[i-1].position[0] = (tx/tz)/(-9.8/tz);
     bugsArray[i-1].position[1] = (ty/tz)/(4.9/tz);
     bugsArray[i-1].position[2] = tz;
-    if (debug === true){
+    if (debugverbose === true){
       console.log("bug["+bugi+"] x:"+bugsArray[i-1].position[0]+" y:"+bugsArray[i-1].position[1]+
       ".........    " +"tx,ty,tz.tw" + tx + ", " + ty + ", " + tz+" "+tw);
       //console.log("U_WORLD:" + objects[i].uniforms.u_world);
@@ -547,14 +547,14 @@ function findClickedBug(clicked) {
   let audioc = new Audio('common/music/click.mp3');
   bugverts();
   for (let i = 0; i < bugscount; i += 1) {
-      if (bugsArray[i].position[2] < 0){
+      if (bugsArray[i].position[2] < 0.1){
         const bugx = bugsArray[i].position[0];
         const bugy = bugsArray[i].position[1];
         const bugxl = (Math.abs(clicked[0] - bugx));
         const bugyl = (Math.abs(clicked[1] - bugy));
         if (debug === true)
           console.log("bugxl, bugxy[ "+i+"]" + bugxl +", " + bugyl+"<"+bugSize);
-        if ((bugxl < bugSize+0.1) && (bugyl < bugSize+0.1)) {
+        if ((bugxl < bugSize) && (bugyl < bugSize)) {
             //if (bugsArray[i].alive == false)
               //return false;
             //bugsArray[i].alive = false;
