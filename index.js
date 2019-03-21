@@ -1,15 +1,15 @@
 /*uncommeny for project nav and lint - comment for run*/
-import * as twgl from './node_modules/twgl.js/dist/4.x/twgl-full.js';
+//import * as twgl from './node_modules/twgl.js/dist/4.x/twgl-full.js';
 //import { StringDecoder } from 'string_decoder';
 /*eslint-disable no-undef*/
 /*global some_unused_var*/
 /*eslint-disable nonblock-statement-body-position*/
-tdl.require('tdl.base');
+tdl.require('tdl.buffers');
 const tdlfps = 'tdl.fps';
 const tdlfast = 'tdl.fast';
 const tdlfull = 'tdl.fullscreen';
-tdl.require(tdlfps);
 tdl.require(tdlfast);
+tdl.require(tdlfps);
 tdl.require(tdlfull);
 
 if (!window.Float32Array) {
@@ -21,8 +21,8 @@ var bugs = []; // array of bugs verts only
 var bugsArray = []; //local variable to store all bug data
 var btime = 0;
 var bugSize = 0.24;
-var bugSpeed = 3; // interval at which bugs appear
-var bugMaxGroups = 6; //max num bug groups
+var bugSpeed = 4; // interval at which bugs appear
+var bugMaxGroups = 12; //max num bug groups
 var bugsgroup = document.getElementById("bugsgroup");
 var bugsgroupu= 0;//active bug groups in game
 var bugsdead = document.getElementById("bugsdead");
@@ -34,10 +34,11 @@ var bugstotal = document.getElementById("bugstotal");
 var bugstotalu = 0;
 const numb = 500;//max bugs to buffer
 var clx, cly;
+var ctx;//used with webgl debug
 var clicked;
 var debug = true;
-var debugverbose = false;
-var diskSpeed = [2*(Math.PI)/60, (Math.PI/2)/60, 0.005];//initial movement speed for 3D disk
+var debugverbose = true;
+var diskSpeed = [(-(Math.PI/2)/60), (Math.PI/2)/60, (Math.PI/2)/60];//initial movement speed for 3D disk
 var frameCount = 0;
 var fast;
 var g_fpsTimer;
@@ -70,9 +71,6 @@ const shapes = [];
 shapes.push(sphere);
 for (i=0; i< numb;i++)
   shapes.push(bugbuff);
-
-var ctx = WebGLDebugUtils.makeDebugContext(c.getContext("webgl"));
-WebGLDebugUtils.init(ctx);
 
 /* Helps setup parent child scene relationships*/
 /*var Node = function() {
@@ -131,11 +129,11 @@ function deathToll(indx){
   bugscount--;
   bugs.pop(indx);
   bugsArray.pop(indx);
-  //shapes.pop(indx+1);
-  //objects.pop(indx+1);
+  shapes.pop(indx+1);
+  objects.pop(indx+1);
   r.pop(indx+1);
   drawRenders.pop(indx+1);
-  //drawObjects.pop(indx+1);
+  drawObjects.pop(indx+1);
 }
 
 function bugCount(){
@@ -178,28 +176,28 @@ function setLighing() {
    light=0;
   }
 
-
 function flipVert(){
-  if (diskSpeed[0] < 0.5)
-    diskSpeed[0] += degToRad(15)/60;
-
+  if (diskSpeed[2] < 0.5)
+    diskSpeed[2] += degToRad(6)/60;
+  diskSpeed[0] = (-diskSpeed[2]);
 }
 
 function flipVertd(){
-  if (diskSpeed[0] > -0.5)
-    diskSpeed[0] -= degToRad(15)/60;
+  if (diskSpeed[2] > -0.5)
+    diskSpeed[2] -= degToRad(6)/60;
+  diskSpeed[0] = (-diskSpeed[2]);
 }
 
 function flipHor(){
   if (diskSpeed[1] < 0.5)
-    diskSpeed[1] += degToRad(15)/60;
+    diskSpeed[1] += degToRad(6)/60;
 }
 function flipHord(){
   if (diskSpeed[1] > -0.5)
-    diskSpeed[1] -= degToRad(15)/60;
+    diskSpeed[1] -= degToRad(6)/60;
 }
 
-const lightWorldPosition = [3, 9, -16];
+const lightWorldPosition = [4, 8, -10];
 const camera = m4.identity();
 const view = m4.identity();
 const viewProjection = m4.identity();
@@ -209,19 +207,19 @@ const tex = twgl.createTexture(gl, {
     /*Applies beach ball or stripe like texture so that spehere and bug
     animation can be seen better through lighting effect
     for beachball change to m4*/ 
-    mag: gl.NEAREST,
-    min: gl.NEAREST,
-    format: gl.LUMINANCE,
+    mag: gl.LINEAR,
+    min: gl.LINEAR,
+    format: gl.RGB,
     src: [
-      128, 
-      255, 
-      128, 
-      128, 
-      255, 
-      128, 
-      128, 
-      255, 
-      128,  
+      128, 255, 128, 128,  
+      255, 128, 255, 255,  
+      128, 255, 128, 255,  
+      128, 128, 255, 128,  
+      255, 255, 128, 255,  
+      128, 255, 128, 128,  
+      128, 128, 255, 128,  
+      255, 128, 255, 255,  
+      128, 128, 128, 128,   
     ],
     width: 1,
 });
@@ -315,9 +313,7 @@ for (let i = 0; i < numb; i++) {
       });
     objects.push({
           //translation: [rand(-10, 10), rand(-10, 10), rand(-10, 10)],
-          id: id,
           translation: [0.0, 0.0, 0.0],
-          xSpeed: diskSpeed[0],
           ySpeed: diskSpeed[1],
           zSpeed: diskSpeed[2],
           uniforms: uniforms,
@@ -373,7 +369,6 @@ for (let i = 0; i < numb; i++) {
     objects.push({
           //translation: [rand(-10, 10), rand(-10, 10), rand(-10, 10)],
           translation: [switx, swity, switz],
-          xSpeed: diskSpeed[0],
           ySpeed: diskSpeed[1],
           zSpeed: diskSpeed[2],
           uniforms: uniforms,
@@ -439,11 +434,36 @@ objects = [
     bugsNode,
   ];
 */
+ctx = WebGLDebugUtils.makeDebugContext(c.getContext("webgl"));
+WebGLDebugUtils.init(ctx);
+var interval_;
+
 document.getElementById("lightb").onclick = function(){setLighing();};
-document.getElementById("flipvert").onclick = function(){flipVert();};
-document.getElementById("fliphor").onclick = function(){flipHor();};
-document.getElementById("flipvertd").onclick = function(){flipVertd();};
-document.getElementById("fliphord").onclick = function(){flipHord();};
+
+document.getElementById("flipvert").onmousedown = function(){
+  interval_ = setInterval(function(){ flipVert(); }, 500);
+};
+document.getElementById("flipvert").onmouseup = function(){
+  clearInterval(interval_);
+};
+document.getElementById("fliphor").onmousedown = function(){
+  interval_ = setInterval(function(){flipHor();}, 500);
+};
+document.getElementById("fliphor").onmouseup = function(){
+  clearInterval(interval_);
+};
+document.getElementById("flipvertd").onmousedown = function(){
+  interval_ = setInterval(function(){flipVertd();}, 500);
+};
+document.getElementById("flipvertd").onmouseup = function(){
+  clearInterval(interval_);
+};
+document.getElementById("fliphord").onmousedown  = function(){
+  interval_ = setInterval(function(){flipHord();}, 500);
+};
+document.getElementById("fliphord").onmouseup = function(){
+  clearInterval(interval_);
+};
 const r = [];
 const drawRenders= [];
 /*RENDER TIME - 3of3 -ear and set the viewport and other global state
@@ -470,6 +490,7 @@ function render(time) {
     }
     then = now;
     //eye speed 1/10 of elapsed time
+    
     twgl.resizeCanvasToDisplaySize(gl.canvas);
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
@@ -478,8 +499,8 @@ function render(time) {
 
     //const projection = m4.ortho(-1,1,-1,1,10,-10);
     const projection = m4.perspective(degToRad(30), gl.canvas.clientWidth / gl.canvas.clientHeight, 0.5, 100);
-    const eye= [1, 1, -20];
-    const eyer = [-1, 1, 20];
+    const eye= [1, 4, -20];
+    const eyer = [-1, -4, 20];
     const target = [0, 0, 0];
     const up = [0, 1, 0];
     const down = [0, -1, 0];
@@ -501,10 +522,11 @@ function render(time) {
       const uni = obj.uniforms;
       const world = uni.u_world;
       m4.identity(world);
-      m4.rotateX(world, time *diskSpeed[0], world);
+
       m4.rotateY(world, time*diskSpeed[1], world);
       m4.rotateZ(world, time*diskSpeed[2], world);
       m4.translate(world, obj.translation, world);
+      m4.rotateX(world, time*diskSpeed[0], world);
       m4.transpose(m4.inverse(world, uni.u_worldInverseTranspose), uni.u_worldInverseTranspose);
       m4.multiply(viewProjection, uni.u_world, uni.u_worldViewProjection);
       });
@@ -513,8 +535,9 @@ function render(time) {
       bugspawnu+=1;
     }
     twgl.drawObjectList(gl, drawRenders);
-    requestAnimationFrame(render);
     c.onmousedown = handleMouseDown;
+    requestAnimationFrame(render);
+
     gameupdate();
 }
 requestAnimationFrame(render);
@@ -531,7 +554,8 @@ function bugverts(){
     const tw = tx + ty + tz;
     const bugi = i-1;
     //console.log( "w:"+ tw);
-    bugsArray[i-1].position[0] = (tx/tz)/(-9.8/tz);
+    const asp = c.width/c.height;
+    bugsArray[i-1].position[0] = (tx/tz)/(-asp*4.9/tz);
     bugsArray[i-1].position[1] = (ty/tz)/(4.9/tz);
     bugsArray[i-1].position[2] = tz;
     if (debugverbose === true){
@@ -550,19 +574,20 @@ function findClickedBug(clicked) {
       if (bugsArray[i].position[2] < 0.1){
         const bugx = bugsArray[i].position[0];
         const bugy = bugsArray[i].position[1];
-        const bugxl = (Math.abs(clicked[0] - bugx));
-        const bugyl = (Math.abs(clicked[1] - bugy));
-        if (debug === true)
-          console.log("bugxl, bugxy[ "+i+"]" + bugxl +", " + bugyl+"<"+bugSize);
-        if ((bugxl < bugSize) && (bugyl < bugSize)) {
-            //if (bugsArray[i].alive == false)
-              //return false;
-            //bugsArray[i].alive = false;
-            audioc.play();
-            deathToll(i); 
-            console.log("bug["+i+"] killed at vector: [" + bugx + ", " + bugy + "]");
-          }
+        const bugxd = (Math.abs(clicked[0] - bugx));
+        const bugyd = (Math.abs(clicked[1] - bugy));
+        if (debugverbose === true)
+          console.log("bug[ "+i+"]xd, bugyd" + bugxd +", " + bugyd+"< bugsize");
+        if ((bugxd <= bugSize))
+          if ((bugyd <= bugSize)) {
+          //if (bugsArray[i].alive == false)
+            //return false;
+          //bugsArray[i].alive = false;
+          audioc.play();
+          deathToll(i); 
+          console.log("bug["+i+"] killed at vector: [" + bugx + ", " + bugy + "]");
         }
+      }
     }
 }
 
@@ -575,8 +600,8 @@ function handleMouseDown(event) {
     //vv = (Math.sqrt((clx * clx) + (cly * cly)));
     clicked = [clx , cly];
     if (debug === true){
-      console.log("client:" + event.clientX + ", " + event.clientY);
-      console.log("clicked:" + clicked);
+      console.log("canvas:" + event.clientX + ", " + event.clientY);
+      console.log("CLICKED:" + clicked);
     }
     findClickedBug(clicked);
 }
