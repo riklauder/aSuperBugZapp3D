@@ -26,11 +26,25 @@ h4 {
     text-align: center;
     z-index: 2;
 }
+#stage {
+    position: relative;
+}
+
 CANVAS, #c, .c, canvas  {
-    display: block;
+    position: absolute;
     width: 100vw;
     height: 100vh;
+    z-index: 0;
+    
 }
+
+ p, #p  {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1;
+}
+
 #b {
     position: absolute;
     top: 10px;
@@ -114,6 +128,10 @@ div.title {
 }
 .stime{
     float: left;
+}
+.smessage{
+    float: left;
+    text-align: center;
 }
 .clickable {
     cursor: pointer;
@@ -202,6 +220,13 @@ div.title {
 .icon li a:focus:before,
 .icon li a:active:before {
     background:#AAA;
+}
+.lesson-title a {
+	text-decoration: none;
+	color: #668;
+}
+.lesson-title a:hover {
+	color: #338;
 }
 
 /* FULL SCREEN

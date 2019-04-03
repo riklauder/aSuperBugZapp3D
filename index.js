@@ -20,8 +20,8 @@ if (!window.Float32Array) {
 var bugs = []; // array of bugs verts only
 var bugsArray = []; //local variable to store all bug data
 var btime = 0;
-var bugSize = 0.24;
-var bugSpeed = 4; // interval at which bugs appear
+var bugSize = 0.2;
+var bugSpeed = 2; // interval at which bugs appear
 var bugMaxGroups = 12; //max num bug groups
 var bugsgroup = document.getElementById("bugsgroup");
 var bugsgroupu= 0;//active bug groups in game
@@ -32,22 +32,29 @@ var bugspawn = document.getElementById("bugspawn");
 var bugspawnu = -1;
 var bugstotal = document.getElementById("bugstotal");
 var bugstotalu = 0;
-const numb = 500;//max bugs to buffer
+const numb = 600;//max bugs to buffer
 var clx, cly;
 var ctx;//used with webgl debug
 var clicked;
 var debug = true;
-var debugverbose = true;
+var debugverbose = false;
 var diskSpeed = [(-(Math.PI/2)/60), (Math.PI/2)/60, (Math.PI/2)/60];//initial movement speed for 3D disk
+var elapsedTimep = 0.0;
 var frameCount = 0;
 var fast;
 var g_fpsTimer;
+var glp;
 var gamescore = document.getElementById("gamescore");
 var gamescoreu = 200;
 var light = 1;//toggle 0 is on 1 is off
+var limit = degToRad(10);
 const lightColor = [[0.0, 0.0, 0.0, 1.0],[1.0, 1.0, 1.0, 1.0]];
 var stime = document.getElementById("stime");
 var statusu = 0;
+var smess = document.getElementById("smessage");
+var smessu = "zap the bugs";
+var swin = "YOU WON!!!!";
+var slose = "YOU LOST!!!";
 
 var then = 0.0;
 
@@ -58,9 +65,10 @@ create textures and upload to buffers*/
 twgl.setDefaults({ attribPrefix: "a_" });
 twgl.setDefaults({enableVertexArrayObjects: true});
 const m4 = twgl.m4;
-const gl = document.querySelector("#c").getContext("webgl");
+const gl = document.querySelector("#c").getContext("experimental-webgl", { premultipliedAlpha: false });
 const programInfo = twgl.createProgramInfo(gl, ["vs", "fs"]);
 g_fpsTimer = new tdl.fps.FPSTimer();
+c.addEventListener("webglcontextlost", function(e) { e.preventDefault(); }, false); 
 //The master sphere vArrrayAttribBuffers
 const sphere = twgl.primitives.createSphereBufferInfo(gl, 5, 48, 24);
 //the game bugs
@@ -161,7 +169,18 @@ function gameupdate(){
   bugspawn.innerHTML = bugspawnu;
   statusu = stupdate();
   stime.innerHTML = statusu;
-  if (btime == 45) 
+  if ((gamescoreu+bugsdeadu*10) > 1000){
+    if (!(smessu == swin))
+      confirm("YOU WON!!!!");
+    smessu = swin;
+    }
+  if (bugstotalu > 200) {
+    (!(smessu == slose))
+      confirm("YOU LOST!!!!");
+    smessu = slose;
+  }
+  smess.innerHTML = smessu;
+    if (btime == 45) 
     bugSpeed=1;
 }
 
@@ -176,16 +195,16 @@ function setLighing() {
    light=0;
   }
 
-function flipVert(){
-  if (diskSpeed[2] < 0.5)
-    diskSpeed[2] += degToRad(6)/60;
-  diskSpeed[0] = (-diskSpeed[2]);
+function flipVertd(){
+  if (diskSpeed[0] < 0.5)
+    diskSpeed[0] += degToRad(6)/60;
+  diskSpeed[2] = (-diskSpeed[0]);
 }
 
-function flipVertd(){
-  if (diskSpeed[2] > -0.5)
-    diskSpeed[2] -= degToRad(6)/60;
-  diskSpeed[0] = (-diskSpeed[2]);
+function flipVert(){
+  if (diskSpeed[0] > -0.5)
+    diskSpeed[0] -= degToRad(6)/60;
+  diskSpeed[2] = (-diskSpeed[0]);
 }
 
 function flipHor(){
@@ -197,12 +216,13 @@ function flipHord(){
     diskSpeed[1] -= degToRad(6)/60;
 }
 
-const lightWorldPosition = [4, 8, -10];
+const lightWorldPosition = [0, 4, -10];
 const camera = m4.identity();
 const view = m4.identity();
 const viewProjection = m4.identity();
 var fpsElem = document.getElementById("fps");
 
+/*tex is used for the sphere itself while texb applies to bugs */
 const tex = twgl.createTexture(gl, {
     /*Applies beach ball or stripe like texture so that spehere and bug
     animation can be seen better through lighting effect
@@ -226,8 +246,8 @@ const tex = twgl.createTexture(gl, {
 
 const objects = [];
 const drawObjects = [];
-/*
-function msphere(){
+
+/*function msphere(){
     const baseHue = rand(0, 360);
     const uniforms = {
         u_lightWorldPos: lightWorldPosition,
@@ -256,14 +276,13 @@ function msphere(){
             zSpeed: diskSpeed[2],
             uniforms: uniforms,
         });
-  }
-  msphere();
+}
+msphere();
 
-        //need functin to calculate clickable bug space verts
-        //push(bugs);
+  //need functin to calculate clickable bug space verts
+  //push(bugs);
 
 /* Bug Prep*/
-
 const texb = twgl.createTexture(gl, {
   //Applies bug lined textures*
   mag: gl.LINEAR,
@@ -326,7 +345,7 @@ for (let i = 0; i < numb; i++) {
       u_diffuseMult: chroma.hsv((baseHueb[i%bugMaxGroups] + rand(0, 60) % 360), 0.6 , 0.8 ).gl(),
       //u_diffuseMult: chroma.random().hsv().gl(),
       u_specular: [1, 1, 1, 1],
-      u_shininess: 100,
+      u_shininess: 200,
       u_specularFactor: 1,
       u_diffuse: texb,
       u_viewInverse: camera,
@@ -341,9 +360,9 @@ for (let i = 0; i < numb; i++) {
         uniforms: uniforms,
     });
     const buggrp = ((i-1)%bugMaxGroups);
-    var switz=rand(-1.6,1.6);
-    var switx=(4.9);
+    var switx=rand(-1.6,1.6);
     var swity=rand(-1.0,1.0);
+    var switz=(4.9);
     if (buggrp == 1){
       switx=rand(-1.6, 1.6);
       switz =(-4.9);
@@ -354,8 +373,8 @@ for (let i = 0; i < numb; i++) {
       switz=rand(-1.0/1.0);
       }
     if (buggrp == 3){
-      var switz=rand(-1.6, 1.6);
-      var switx=(-4.9);
+      var switx=rand(-1.6, 1.6);
+      var switz=(-4.9);
     }
     if (buggrp == 4){
       switx=rand(-1.6, 1.6);
@@ -464,6 +483,7 @@ document.getElementById("fliphord").onmousedown  = function(){
 document.getElementById("fliphord").onmouseup = function(){
   clearInterval(interval_);
 };
+Explosion(500, 300);
 const r = [];
 const drawRenders= [];
 /*RENDER TIME - 3of3 -ear and set the viewport and other global state
@@ -499,8 +519,8 @@ function render(time) {
 
     //const projection = m4.ortho(-1,1,-1,1,10,-10);
     const projection = m4.perspective(degToRad(30), gl.canvas.clientWidth / gl.canvas.clientHeight, 0.5, 100);
-    const eye= [1, 4, -20];
-    const eyer = [-1, -4, 20];
+    const eye= [0, 1, -20];
+    const eyer = [0, -4, 20];
     const target = [0, 0, 0];
     const up = [0, 1, 0];
     const down = [0, -1, 0];
@@ -523,10 +543,10 @@ function render(time) {
       const world = uni.u_world;
       m4.identity(world);
 
+      m4.rotateX(world, time*diskSpeed[0], world);
       m4.rotateY(world, time*diskSpeed[1], world);
       m4.rotateZ(world, time*diskSpeed[2], world);
       m4.translate(world, obj.translation, world);
-      m4.rotateX(world, time*diskSpeed[0], world);
       m4.transpose(m4.inverse(world, uni.u_worldInverseTranspose), uni.u_worldInverseTranspose);
       m4.multiply(viewProjection, uni.u_world, uni.u_worldViewProjection);
       });
@@ -535,9 +555,9 @@ function render(time) {
       bugspawnu+=1;
     }
     twgl.drawObjectList(gl, drawRenders);
-    c.onmousedown = handleMouseDown;
-    requestAnimationFrame(render);
 
+    requestAnimationFrame(render);
+    c.onmousedown = handleMouseDown;
     gameupdate();
 }
 requestAnimationFrame(render);
@@ -567,11 +587,11 @@ function bugverts(){
 }
 
 // eslint-disable-next-line strict
-function findClickedBug(clicked) {
+function findClickedBug(clicked, clickx, clicky) {
   let audioc = new Audio('common/music/click.mp3');
   bugverts();
   for (let i = 0; i < bugscount; i += 1) {
-      if (bugsArray[i].position[2] < 0.1){
+      if (bugsArray[i].position[2] < 0){
         const bugx = bugsArray[i].position[0];
         const bugy = bugsArray[i].position[1];
         const bugxd = (Math.abs(clicked[0] - bugx));
@@ -584,24 +604,30 @@ function findClickedBug(clicked) {
             //return false;
           //bugsArray[i].alive = false;
           audioc.play();
-          deathToll(i); 
+          deathToll(i);
           console.log("bug["+i+"] killed at vector: [" + bugx + ", " + bugy + "]");
-        }
+          elapsedTimep = 0.0;
+          Explosion(clickx, clicky, elapsedTimep);
+          }
       }
-    }
+  }
 }
 
 /*handlemouse down uses canvas click event x-y coordinates
 maps to origin at centre coordinates, normalizes coordinates to
 a vector using float values for webgl*/
 function handleMouseDown(event) {
-    clx = -1 + 2*event.clientX/c.width;
-    cly = -1 + 2*(c.height-event.clientY)/c.height;
+    let clickx = event.clientX;
+    let clicky = event.clientY;
+    clx = -1 + 2*clickx/c.width;
+    cly = -1 + 2*(c.height-clicky)/c.height;
     //vv = (Math.sqrt((clx * clx) + (cly * cly)));
     clicked = [clx , cly];
     if (debug === true){
-      console.log("canvas:" + event.clientX + ", " + event.clientY);
+      console.log("canvas:" + clickx + ", " + clicky);
       console.log("CLICKED:" + clicked);
     }
-    findClickedBug(clicked);
+    findClickedBug(clicked, clickx, clicky);
 }
+
+

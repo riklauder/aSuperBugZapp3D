@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes"/>
+
+<link rel="stylesheet" href="css/style.css"/>
+<script src="common/webgl-debug.js" charset="utf-8"></script>
+<script src="common/webgl-utils.js" charset="utf-8"></script>
+</head>
+<body>
+<canvas id="p" width="1280" height="720"></canvas>
+
+<script id="shader-fs" type="x-shader/x-fragment">
+				#ifdef GL_ES
+				precision highp float;
+				#endif
+    		void main(void) {
+    		 gl_FragColor = vec4(0.6, 0.6, 1.0, 1.0);
+    		}
+		</script>
+
+  <script id="shader-vs" type="x-shader/x-vertex">
+    	attribute vec3 vertexPosition;
+
+  	uniform mat4 modelViewMatrix;
+  	uniform mat4 perspectiveMatrix;
+
+   	void main(void) {
+  		gl_Position = perspectiveMatrix * modelViewMatrix * vec4(  vertexPosition, 1.0);
+  	}
+  </script>
+  <script src="node_modules/twgl.js/dist/4.x/twgl-full.js"></script>
+  <script src="particle.js"></script>
+  <script>
+    window.onload = Explosion(500, 300);
+  </script>
+  </body>
+  </html>
