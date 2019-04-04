@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+      "target": "es6"
+  },
+  "include": [
+    "./*",
+    "./common",
+    "./twgl",
+    "./tdl",
+    "./3rdparty",
+    "./css",
+    "./js",
+    "./node_modules/twgl.js/dist/4.x/twgl-full.js"
+], 
+"exclude":[
+  "./node_modules"
+]
+}

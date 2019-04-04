@@ -185,19 +185,19 @@ WebGLUtils = function() {
     setupWebGL2Compute: setupWebGL2Compute
   };
   }();
-  
+    
   /**
    * Provides requestAnimationFrame in a cross browser way.
    */
   window.requestAnimFrame = (function() {
     return window.requestAnimationFrame ||
-           window.webkitRequestAnimationFrame ||
-           window.mozRequestAnimationFrame ||
-           window.oRequestAnimationFrame ||
-           window.msRequestAnimationFrame ||
+          window.webkitRequestAnimationFrame ||
+          window.mozRequestAnimationFrame ||
+          window.oRequestAnimationFrame ||
+          window.msRequestAnimationFrame ||
            function(/* function FrameRequestCallback */ callback, /* DOMElement Element */ element) {
-             return window.setTimeout(callback, 1000/60);
-           };
+            return window.setTimeout(callback, 1000/60);
+          };
   })();
   
   /**
@@ -205,11 +205,11 @@ WebGLUtils = function() {
    */
   window.cancelAnimFrame = (function() {
     return window.cancelAnimationFrame ||
-           window.webkitCancelAnimationFrame ||
-           window.mozCancelAnimationFrame ||
-           window.oCancelAnimationFrame ||
-           window.msCancelAnimationFrame ||
-           window.clearTimeout;
+          window.webkitCancelAnimationFrame ||
+          window.mozCancelAnimationFrame ||
+          window.oCancelAnimationFrame ||
+          window.msCancelAnimationFrame ||
+          window.clearTimeout;
   })();
   
   

@@ -20,7 +20,6 @@
 ** TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 ** MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
 */
-
 // Various functions for helping debug WebGL apps.
 
 WebGLDebugUtils = function() {
@@ -354,7 +353,7 @@ WebGLDebugUtils = function() {
   function glFunctionArgToString(functionName, numArgs, argumentIndex, value) {
     var funcInfo = glValidEnumContexts[functionName];
     if (funcInfo !== undefined) {
-      var funcInfo = funcInfo[numArgs];
+      funcInfo = funcInfo[numArgs];
       if (funcInfo !== undefined) {
         if (funcInfo[argumentIndex]) {
           if (typeof funcInfo[argumentIndex] === 'object' &&
@@ -450,6 +449,7 @@ WebGLDebugUtils = function() {
    * @param {!WebGLRenderingContext} opt_err_ctx The webgl context
    *        to call getError on if different than ctx.
    */
+
   function makeDebugContext(ctx, opt_onErrorFunc, opt_onFunc, opt_err_ctx) {
     opt_err_ctx = opt_err_ctx || ctx;
     init(ctx);

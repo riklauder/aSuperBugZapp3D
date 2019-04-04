@@ -1,9 +1,6 @@
 /*uncommeny for project nav and lint - comment for run*/
 //import * as twgl from './node_modules/twgl.js/dist/4.x/twgl-full.js';
-//import { StringDecoder } from 'string_decoder';
-/*eslint-disable no-undef*/
-/*global some_unused_var*/
-/*eslint-disable nonblock-statement-body-position*/
+
 tdl.require('tdl.buffers');
 const tdlfps = 'tdl.fps';
 const tdlfast = 'tdl.fast';
@@ -39,6 +36,9 @@ var clicked;
 var debug = true;
 var debugverbose = false;
 var diskSpeed = [(-(Math.PI/2)/60), (Math.PI/2)/60, (Math.PI/2)/60];//initial movement speed for 3D disk
+var diskStop = [0, 0, 0];
+var diskRestart = [(-(Math.PI/2)/60), (Math.PI/2)/60, (Math.PI/2)/60];
+var diskstopflag = false;
 var elapsedTimep = 0.0;
 var frameCount = 0;
 var fast;
@@ -194,6 +194,17 @@ function setLighing() {
   else
    light=0;
   }
+
+function stopDisk(){
+  if (diskstopflag == false){
+    diskSpeed = diskStop;
+    diskstopflag = true;
+  }
+  else {
+    diskSpeed = diskRestart;
+    diskstopflag = false;
+  }
+}
 
 function flipVertd(){
   if (diskSpeed[0] < 0.5)
@@ -472,7 +483,6 @@ document.getElementById("fliphor").onmouseup = function(){
   clearInterval(interval_);
 };
 document.getElementById("flipvertd").onmousedown = function(){
-  interval_ = setInterval(function(){flipVertd();}, 500);
 };
 document.getElementById("flipvertd").onmouseup = function(){
   clearInterval(interval_);
@@ -483,6 +493,12 @@ document.getElementById("fliphord").onmousedown  = function(){
 document.getElementById("fliphord").onmouseup = function(){
   clearInterval(interval_);
 };
+
+document.getElementById("stopdisk").onclick = function(){stopDisk();};
+document.getElementById("flipvert").ontouchstart = function(){flipVert();};
+document.getElementById("fliphor").ontouchstart = function(){flipHor();};
+document.getElementById("flipvertd").ontouchstart = function(){flipVertd();};
+document.getElementById("fliphord").ontouchstart = function(){flipHord();};
 Explosion(500, 300);
 const r = [];
 const drawRenders= [];

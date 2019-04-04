@@ -16,7 +16,7 @@ function Explosion(clickx, clicky, elapsedTimep ){
     ptsArr,
     randRateArr,
     drawType,
-    numLines = 3000;
+    numLines = 1500;
   var then = 0.0;
   var target = [];
   var randomTargetXArr = [], randomTargetYArr = [];
@@ -42,7 +42,7 @@ function Explosion(clickx, clicky, elapsedTimep ){
     //Set the viewport based on click coordinates
     cw = 160;
     ch = 100;
-    clickw = clickx/2+cw/2;
+    clickw = clickx/2+ch/2;
     clickh = (p.clientHeight/2 - clicky/2);
     glp.viewport(clickw, clickh, cw, ch);
     //Shaders

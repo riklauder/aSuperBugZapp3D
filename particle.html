@@ -14,25 +14,24 @@
 				#ifdef GL_ES
 				precision highp float;
 				#endif
-    		void main(void) {
-    		 gl_FragColor = vec4(0.6, 0.6, 1.0, 1.0);
-    		}
+		void main(void) {
+			gl_FragColor = vec4(0.6, 0.6, 1.0, 1.0);
+		}
 		</script>
 
-  <script id="shader-vs" type="x-shader/x-vertex">
-    	attribute vec3 vertexPosition;
+<script id="shader-vs" type="x-shader/x-vertex">
+	attribute vec3 vertexPosition;
 
-  	uniform mat4 modelViewMatrix;
-  	uniform mat4 perspectiveMatrix;
-
-   	void main(void) {
+uniform mat4 modelViewMatrix;
+uniform mat4 perspectiveMatrix;
+void main(void) {
   		gl_Position = perspectiveMatrix * modelViewMatrix * vec4(  vertexPosition, 1.0);
-  	}
-  </script>
-  <script src="node_modules/twgl.js/dist/4.x/twgl-full.js"></script>
-  <script src="particle.js"></script>
-  <script>
+}
+</script>
+<script src="node_modules/twgl.js/dist/4.x/twgl-full.js"></script>
+<script src="particle.js"></script>
+<script>
     window.onload = Explosion(500, 300);
-  </script>
-  </body>
-  </html>
+</script>
+</body>
+</html>

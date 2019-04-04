@@ -32,12 +32,16 @@
     "webgl-utils": "^1.0.1"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-flow": "^6.23.0",
+    "flow-bin": "^0.96.0",
     "grunt": "^1.0.4",
     "loadsh": "0.0.4",
     "webpack": "^4.29.6",
     "webpack-cli": "^3.3.0"
   },
   "scripts": {
+    "flow": "flow",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -49,6 +53,5 @@
   "bugs": {
     "url": "https://github.com/riklauder/aSuperBugZapp3D/issues"
   },
-  "homepage": "https://github.com/riklauder/aSuperBugZapp3D#readme",
-  "description": ""
+  "homepage": "https://github.com/riklauder/aSuperBugZapp3D#readme"
 }
