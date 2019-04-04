@@ -170,12 +170,12 @@ function gameupdate(){
   statusu = stupdate();
   stime.innerHTML = statusu;
   if ((gamescoreu+bugsdeadu*10) > 1000){
-    if (!(smessu == swin))
+    if (smessu != swin)
       confirm("YOU WON!!!!");
     smessu = swin;
     }
   if (bugstotalu > 200) {
-    (!(smessu == slose))
+    if (smessu != slose);
       confirm("YOU LOST!!!!");
     smessu = slose;
   }
