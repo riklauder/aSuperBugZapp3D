@@ -373,7 +373,7 @@ for (let i = 0; i < numb; i++) {
     const buggrp = ((i-1)%bugMaxGroups);
     var switx=rand(-1.6,1.6);
     var swity=rand(-1.0,1.0);
-    var switz=(4.9);
+    var switz=(-4.9);
     if (buggrp == 1){
       switx=rand(-1.6, 1.6);
       switz =(-4.9);

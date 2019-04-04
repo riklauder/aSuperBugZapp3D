@@ -16,7 +16,7 @@ function Explosion(clickx, clicky, elapsedTimep ){
     ptsArr,
     randRateArr,
     drawType,
-    numLines = 1500;
+    numLines = 2000;
   var then = 0.0;
   var target = [];
   var randomTargetXArr = [], randomTargetYArr = [];
