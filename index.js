@@ -535,7 +535,7 @@ function render(time) {
 
     //const projection = m4.ortho(-1,1,-1,1,10,-10);
     const projection = m4.perspective(degToRad(30), gl.canvas.clientWidth / gl.canvas.clientHeight, 0.5, 100);
-    const eye= [0, 1, -20];
+    const eye= [0, -5, -20];
     const eyer = [0, -4, 20];
     const target = [0, 0, 0];
     const up = [0, 1, 0];
