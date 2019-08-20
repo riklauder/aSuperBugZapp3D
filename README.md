@@ -3,7 +3,10 @@ aSuperBugZapp3D WebGL 3D
 
 
 Uni Graphics course project using WebGL. TWGL was very useful for avoiding boilerplate.
+
+
 Porject Description:
+
 Expand using WebGL and JavaScript (but not three.js), and the mathematics package that comes with the textbook, project 1 into a three dimensional interactive game where now
 
 1. The playing field starts as surface of a sphere centered at the origin.
