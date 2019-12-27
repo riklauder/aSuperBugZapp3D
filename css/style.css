@@ -196,7 +196,7 @@ div.title {
 .icon li a:hover,
 .icon li a:focus,
 .icon li a:active {
-    color:#AAA;
+    color:rgb(173, 37, 139);
     background:transparent;
 }
 
@@ -396,12 +396,12 @@ h1 {
 .controls label {
     display: inline-block;
     width: 150px;
-    color: pink;
+    color: rgb(223, 86, 131);
     font-weight: bold;
 }
 
 a:link, a:visited {
-    color: pink;
+    color: rgb(214, 70, 142);
 }
 
 .controls .slider label {

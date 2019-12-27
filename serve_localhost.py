@@ -29,7 +29,7 @@ if __name__ == '__main__':
                         help='Specify alternative directory '
                         '[default:current directory]')
     parser.add_argument('port', action='store',
-                        default=8443, type=int,
+                        default=8040, type=int,
                         nargs='?',
                         help='Specify alternate port [default: 8000]')
     args = parser.parse_args()
