@@ -483,6 +483,7 @@ document.getElementById("fliphor").onmouseup = function(){
   clearInterval(interval_);
 };
 document.getElementById("flipvertd").onmousedown = function(){
+  interval_ = setInterval(function(){ flipVertd(); }, 500);
 };
 document.getElementById("flipvertd").onmouseup = function(){
   clearInterval(interval_);
