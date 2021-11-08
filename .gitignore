@@ -9,6 +9,9 @@ yarn-error.log*
 .well-known/
 .vscode/
 .vs/
+fluid/
+water/
+pacmanJS/
 
 # Runtime data
 pids
